@@ -113,13 +113,9 @@ st.markdown("""
 # Set the default template for Plotly
 pio.templates.default = "ggplot2"
 
-# Get the current file path and the parent directory
-current_file_path = Path(__file__).resolve()
-parent_directory = current_file_path.parent.parent
-
 # Construct file paths using Pathlib
-file_path_university = parent_directory / 'RegionerAkademier' / 'affiliations_university_norm.csv'
-file_path_university2 = parent_directory / 'RegionerAkademier' / 'affiliations_university_decoder_list.csv'
+file_path_university = 'affiliations_university_norm.csv'
+file_path_university2 = 'affiliations_university_decoder_list.csv'
 
 # Read the CSV files
 try:
