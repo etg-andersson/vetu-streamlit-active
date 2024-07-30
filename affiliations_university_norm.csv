@@ -1,0 +1,199 @@
+Department,Expression,Code
+University of Gothenburg,nvrstygthnbrg,1
+Gothenburg University,gthnbrgnvrsty,1
+Göteborg University,gtbrgnvrsty,1
+Göteborgs Universitet,gtbrgsnvrstt,1
+Institute of Biomedicine,bmdcn,1.2
+Department of Chemistry and Molecular Biology,chmstrymlclrblgy,1.3
+Institute of Clinical Sciences,clnclscncs,1.4
+Department of Food and Nutrition and Sport Science,fdntrtnsprtscnc,1.5
+Institute of Medicine,mdcn,1.6
+Institute of Neuroscience and Physiology,nrscncphyslgy,1.7
+Institute of Odontology,dntlgy,1.8
+Institute of Health and Care Sciences,hlthcrscncs,1.9
+Biomedicin,bmdcn,1.2
+Kemi och molekylärbiologi,kmmlkylrblg,1.3
+"Kliniska vetenskaper, ",klnskvtnskpr,1.4
+Kost- och idrottsvetenskap,kstdrttsvtnskp,1.5
+Medicin,mdcn,1.6
+Neurovetenskap och fysiologi,nrvtnskpfyslg,1.7
+Odontologi,dntlg,1.8
+"Vårdvetenskap och hälsa, inst för ",vrdvtnskphls,1.9
+Department of Infectious Dieseases,nfctsdsss,1.2.1
+Department of Microbiology and Immunoogy,mcrblgymmngy,1.2.2
+Department of Laboratory Medicine,lbrtrymdcn,1.2.3
+Department of Medical Biochemistry and Cell biology,mdclbchmstrycllblgy,1.2.4
+Department of Onocology,nclgy,1.4.01
+Radiology ,rdlgy,1.4.02
+Anesthesiology and intensive Care,nsthslgyntnsvcr,1.4.03
+Deramtology and Venerolgy,drmtlgyvnrlgy,1.4.04
+Urology,rlgy,1.4.05
+Pediatrics,pdtrcs,1.4.06
+Swedish Infocenter for Rare Diseases,swdshnfcntrfrrrdsss,1.4.07
+Otorhinolaryngology,trhnlrynglgy,1.4.08
+Plastic Surgery,plstcsrgry,1.4.09
+Medical Radiation Sciences,mdclrdtnscncs,1.4.10
+Obstetrics and Gynecology,bsttrcsgynclgy,1.4.11
+Surgery,srgry,1.4.12
+Orhthopaedics,rhthpdcs,1.4.13
+Internal Medicine and ClinicalNutrition,ntrnlmdcnclnclntrtn,1.6.1
+School of Public Health and Community Medicine,schlpblchlthcmmntymdcn,1.6.2
+Rheumatology and Inflammation Research,rhmtlgynflmmtnrsrch,1.6.3
+Molecular and Clinical Medicine,mlclrclnclmdcn,1.6.4
+Physiology,physlgy,1.7.1
+Pharmacology,phrmclgy,1.7.2
+Health and Rehabilitation,hlthrhblttn,1.7.3
+Clinical Neuroscience,clnclnrscnc,1.7.4
+Psychiatry and Neurochemistry,psychtrynrchmstry,1.7.5
+Learning and Leadership for Health Care Professionals,lrnngldrshpfrhlthcrprfssnls,1.9.1
+Reproductive and perinatal health,rprdctvprntlhlth,1.9.2
+"Diagnostics, Acute and Critical Care",dgnstcsctcrtclcr,1.9.3
+Care in Long-term Conditions,crnlngtrmcndtns,1.9.4
+The Life Context and Health Promotion,lfcntxthlthprmtn,1.9.5
+Karolinska Institutet,krlnsk,2
+Karolinska Institute,krlnsk,2
+Biovetenskaper och näringslära,bvtnskprnrngslr,2.01
+Cell- och molekylärbiologi,cllmlkylrblg,2.02
+Fysiologi och farmakologi,fyslgfrmklg,2.03
+Global folkhälsa,glblflkhls,2.04
+Institutet för miljömedicin,mljmdcn,2.05
+"Klinisk forskning och utbildning, Södersjukhuset",klnskfrsknngtbldnngsdrsjkhst,2.06
+Klinisk neurovetenskap,klnsknrvtnskp,2.07
+"Klinisk vetenskap, intervention och teknik",klnskvtnskpntrvntntknk,2.08
+"Kliniska vetenskaper, Danderyds sjukhus",klnskvtnskprdndrydssjkhs,2.09
+Kvinnors och barns hälsa,kvnnrsbrnshls,2.10
+Laboratoriemedicin,lbrtrmdcn,2.11
+"Lärande, informatik, management och etik",lrndnfrmtkmngmnttk,2.12
+"Medicin, Huddinge",mdcnhddng,2.13
+"Medicin, Solna",mdcnsln,2.14
+Medicinsk biokemi och biofysik,mdcnskbkmbfysk,2.15
+Medicinsk epidemiologi och biostatistik,mdcnskpdmlgbsttstk,2.16
+"Mikrobiologi, tumör- och cellbiologi",mkrblgtmrcllblg,2.17
+Molekylär medicin och kirurgi,mlkylrmdcnkrrg,2.18
+"Neurobiologi, vårdvetenskap och samhälle",nrblgvrdvtnskpsmhll,2.19
+Neurovetenskap,nrvtnskp,2.20
+Odontologi,dntlg,2.21
+Onkologi-patologi,nklgptlg,2.22
+Department of Biosciences and Nutrition,bscncsntrtn,2.01
+Department of Cell and Molecular Biology,cllmlclrblgy,2.02
+Department of Physiology and Pharmacology,physlgyphrmclgy,2.03
+Department of Global Public Health,glblpblchlth,2.04
+Institute of Environmental Medicine,nvrnmntlmdcn,2.05
+"Department of Clinical Science and Education, Södersjukhuset",clnclscncdctnsdrsjkhst,2.06
+Department of Clinical Neuroscience,clnclnrscnc,2.07
+"Department of Clinical Science, Intervention and Technology",clnclscncntrvntntchnlgy,2.08
+"Department of Clinical Sciences, Danderyd Hospital",clnclscncsdndrydhsptl,2.09
+Department of Women’s and Children’s Health,wmn’schldrn’shlth,2.10
+Department of Laboratory Medicine,lbrtrymdcn,2.11
+"Department of Learning, Informatics, Management and Ethics",lrnngnfrmtcsmngmntthcs,2.12
+"Department of Medicine, Huddinge",mdcnhddng,2.13
+"Department of Medicine, Solna",mdcnsln,2.14
+Department of Medical Biochemistry and Biophysics,mdclbchmstrybphyscs,2.15
+Department of Medical Epidemiology and Biostatistics,mdclpdmlgybsttstcs,2.16
+"Department of Microbiology, Tumor and Cell Biology",mcrblgytmrcllblgy,2.17
+Department of Molecular Medicine and Surgery,mlclrmdcnsrgry,2.18
+"Department of Neurobiology, Care Sciences and Society",nrblgycrscncsscty,2.19
+Department of Neuroscience,nrscnc,2.2
+Department of Dental Medicine,dntlmdcn,2.21
+Department of Oncology-Pathology,nclgypthlgy,2.22
+Linköping University,lnkpngnvrsty,3
+Linköpings Universitet,lnkpngsnvrstt,3
+University of Linköping,nvrstylnkpng,3
+Institutionen för biomedicinska och kliniska vetenskaper,bmdcnskklnskvtnskpr,3.1
+"Institutionen för fysik, kemi och biologi",fyskkmblg,3.2
+"Institutionen för hälsa, medicin och vård",hlsmdcnvrd,3.3
+Institutionen för medicinsk teknik,mdcnsktknk,3.4
+Department of Biomedical and Clinical Sciences,bmdclclnclscncs,3.1
+"Department of Physics, Chemistry and Biology",physcschmstryblgy,3.2
+"Department of Health, Medicine and Caring Sciences",hlthmdcncrngscncs,3.3
+Department of Biomedical Engineering,bmdclngnrng,3.4
+Umeå Universitet,mnvrstt,4
+Umeå University,mnvrsty,4
+University of Umeå,nvrstym,4
+Institutionen för epidemiologi och global hälsa,pdmlgglblhls,4.01
+Institutionen för folkhälsa och klinisk medicin,flkhlsklnskmdcn,4.02
+Institutionen för integrativ medicinsk biologi (IMB),ntgrtvmdcnskblg,4.03
+Institutionen för kirurgisk och perioperativ vetenskap,krrgskprprtvvtnskp,4.04
+Institutionen för klinisk mikrobiologi,klnskmkrblg,4.05
+Institutionen för klinisk vetenskap,klnskvtnskp,4.06
+Institutionen för kost- och måltidsvetenskap,kstmltdsvtnskp,4.07
+Institutionen för medicinsk biovetenskap,mdcnskbvtnskp,4.08
+Institutionen för medicinsk kemi och biofysik,mdcnskkmbfysk,4.09
+Institutionen för molekylärbiologi,mlkylrblg,4.10
+Institutionen för odontologi,dntlg,4.11
+Institutionen för omvårdnad,mvrdnd,4.12
+Institutionen för samhällsmedicin och rehabilitering,smhllsmdcnrhbltrng,4.13
+Department of Epidemiology and Global Health,pdmlgyglblhlth,4.01
+Department of Public Health and Clinical Medicine,pblchlthclnclmdcn,4.02
+Department of Medical and Translational Biology,mdcltrnsltnlblgy,4.03
+Department of Surgical and Perioperative Sciences,srgclprprtvscncs,4.04
+Department of Clinical Microbiology,clnclmcrblgy,4.05
+Department of Clinical Sciences,clnclscncs,4.06
+"Department of Food, Nutrition and Culinary Science",fdntrtnclnryscnc,4.07
+Department of Medical Biosciences,mdclbscncs,4.08
+Department of Medical Biochemistry and Biophysics,mdclbchmstrybphyscs,4.09
+Department of Molecular Biology,mlclrblgy,4.10
+Department of Odontology,dntlgy,4.11
+Department of Nursing,nrsng,4.12
+Department of Community Medicine and Rehabilitation,cmmntymdcnrhblttn,4.13
+Örebro Universitet,rbrnvrstt,5
+Örebro University,rbrnvrsty,5
+University of Örebro,nvrstyrbr,5
+Hälsovetenskaper,hlsvtnskpr,5.1
+Medicinska vetenskaper,mdcnskvtnskpr,5.2
+Health Sciences,hlthscncs,5.1
+School of Medical Sciences,schlmdclscncs,5.2
+Uppsala Universitet,ppslnvrstt,6
+Uppsala University,ppslnvrsty,6
+University of Uppsala,nvrstyppsl,6
+Institutionen för biologisk grundutbildning,blgskgrndtbldnng,6.01
+Institutionen för farmaceutisk biovetenskap,frmctskbvtnskp,6.02
+Institutionen för farmaci,frmc,6.03
+Institutionen för folkhälso- och vårdvetenskap,flkhlsvrdvtnskp,6.04
+"Institutionen för immunologi, genetik och patologi",mmnlggntkptlg,6.05
+Institutionen för kemi - BMC,kmbmc,6.06
+Institutionen för kemi - Ångström,kmngstrm,6.07
+Institutionen för kirurgiska vetenskaper,krrgskvtnskpr,6.08
+Institutionen för kostvetenskap,kstvtnskp,6.09
+Institutionen för kvinnors och barns hälsa,kvnnrsbrnshls,6.10
+Institutionen för läkemedelskemi,lkmdlskm,6.11
+Institutionen för medicinska vetenskaper,mdcnskvtnskpr,612
+Institutionen för medicinsk biokemi och mikrobiologi,mdcnskbkmmkrblg,6.13
+Institutionen för medicinsk cellbiologi,mdcnskcllblg,6.14
+Biology Education Center,blgydctncntr,6.01
+Department of Pharmaceutical Biosciences,phrmctclbscncs,6.02
+Department of Pharmacy,phrmcy,6.03
+Department of Public Health and Caring Sciences,pblchlthcrngscncs,6.04
+"Department of Immunology, Genetics and Pathology",mmnlgygntcspthlgy,6.05
+Department of Chemistry - Ångström Laboratory,chmstryngstrmlbrtry,6.06
+Department of Chemistry – BMC,chmstrybmc,6.07
+Department of Surgical Sciences,srgclscncs,6.08
+"Department of Food Studies, Nutrition and Dietetics",fdstdsntrtndttcs,6.09
+Department of Women’s and Children’s Health,wmn’schldrn’shlth,6.10
+Department of Medicinal Chemistry,mdcnlchmstry,6.11
+Department of Medical Sciences,mdclscncs,6.12
+Department of Medical Biochemistry and Microbiology,mdclbchmstrymcrblgy,6.13
+Department of Medical Cell Biology,mdclcllblgy,6.14
+Lunds Universitet,lndsnvrstt,7
+Lund University,lndnvrsty,7
+University of Lund,nvrstylnd,7
+Biomedicinsk teknik,bmdcnsktknk,7.01
+BMC Biomedicinskt centrum,bmcbmdcnsktcntrm,7.02
+"Experimentell medicinsk vetenskap, Lund",xprmntllmdcnskvtnskplnd,7.03
+Hälsovetenskaper,hlsvtnskpr,7.04
+Immunteknologi,mmntknlg,7.05
+"Kliniska vetenskaper, Lund",klnskvtnskprlnd,7.06
+"Kliniska vetenskaper, Malmö",klnskvtnskprmlm,7.07
+"Laboratoriemedicin, Lund",lbrtrmdcnlnd,7.08
+Translationell medicin,trnsltnllmdcn,7.09
+Stamcellscentrum (SCC),stmcllscntrm,7.10
+Department of Biomedical Engineering,bmdclngnrng,7.01
+"Biomedical Centre, BMC",bmdclcntrbmc,7.02
+Department of Experimental Medical Sciences,xprmntlmdclscncs,7.03
+Department of Health Sciences,hlthscncs,7.04
+Department of Immunotechnology,mmntchnlgy,7.05
+"Department of Clinical Sciences, Lund",clnclscncslnd,7.06
+"Department of Clinical Sciences, Malmö",clnclscncsmlm,7.07
+Department of Laboratory Medicine,lbrtrymdcn,7.08
+Department of Translational Medicine,trnsltnlmdcn,7.09
+Stem Cell Center,stmcllcntr,7.10
