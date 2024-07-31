@@ -472,7 +472,7 @@ elif navigation == 'Akademi & Högskola':
                             (universities2['Code'].str.startswith(selected_institute_code_comp + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
                         ) # Avdelning
                 
-                data2 = fetch_data(selected_university_comp, selected_institute_comp, selected_department_comp, fran_ar, till_ar)
+                data2 = fetch_data(selected_university_comp, selected_institute_comp, selected_department_comp, topic_filter, type_filter, fran_ar, till_ar)
 
             else:
                 data2 = pd.DataFrame()
