@@ -374,10 +374,10 @@ elif navigation == 'Akademi & Högskola':
 
         # Arrange dropdown menus in columns
         col1, col2 = st.columns(2)
-        col3 = st.columns(1)
-        col4, col5, col6 = st.columns(3)
-        col7, col8 = st.columns(2)
-        col9, col10, col11 = st.columns(3)
+        col3, col4 = st.columns(2)
+        col5, col5, col7 = st.columns(3)
+        col8, col9 = st.columns(2)
+        col10, col11, col12 = st.columns(3)
 
         # Other dropdown menus
         with col1:
@@ -414,14 +414,14 @@ elif navigation == 'Akademi & Högskola':
                 type_filter = ""
                 topic_filter = ""
 
-        with col4:
+        with col5:
             selected_university = st.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
             if selected_university != "All":
                 selected_university_code = universities2[universities2['Department'] == selected_university]['Code'].values[0]
             else:
                 selected_university_code = ""
 
-        with col5:
+        with col6:
             if selected_university == "ALL":
                 st.selectbox('Institut:', ["All"])
             else:
@@ -434,7 +434,7 @@ elif navigation == 'Akademi & Högskola':
                 else:
                     selected_institute_code = ""
 
-        with col6:    
+        with col7:    
             if selected_institute == "ALL":
                 st.selectbox('Department:', ["All"])
             else:
@@ -443,17 +443,17 @@ elif navigation == 'Akademi & Högskola':
                     (universities2['Code'].str.startswith(selected_institute_code + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
                 ) # Avdelning
 
-        with col7:
+        with col8:
             jamfor_box = st.checkbox('Jämför')
             if jamfor_box:
-                with col9:
+                with col10:
                     selected_university_comp = st.selectbox('Jämför med Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
                     if selected_university_comp != "All":
                         selected_university_code_comp = universities2[universities2['Department'] == selected_university_comp]['Code'].values[0]
                     else:
                         selected_university_code_comp = ""
 
-                with col10:
+                with col11:
                     if selected_university_comp == "ALL":
                         st.selectbox('Institut:', ["All"])
                     else:
@@ -466,7 +466,7 @@ elif navigation == 'Akademi & Högskola':
                         else:
                             selected_institute_code_comp = ""
 
-                with col11:    
+                with col12:    
                     if selected_institute_comp == "ALL":
                         st.selectbox('Department:', ["All"])
                     else:
@@ -480,7 +480,7 @@ elif navigation == 'Akademi & Högskola':
             else:
                 data2 = pd.DataFrame()
         
-        with col8:
+        with col9:
             pass          
 
 
