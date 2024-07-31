@@ -800,10 +800,11 @@ elif navigation == 'Forskare':
     search_query = st.text_input("Search within data", "")
 
     # Filter the DataFrame based on the search query
+    df_forskare2 = df_forskare1
     if search_query:
-        df_forskare_resultat = df_forskare1[df_forskare1.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
+        df_forskare_resultat = df_forskare2[df_forskare2.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
     else:
-        df_forskare_resultat = df_forskare1
+        df_forskare_resultat = df_forskare2
 
     # Display filtered DataFrame
     st.dataframe(df_forskare_resultat, width=1600, height=300)
