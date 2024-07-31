@@ -23,7 +23,7 @@ st.markdown("""
         padding-left: 30px;
         text-align: center;
         color: white;
-        font-size: 1.8vw; /* Use viewport width for font size */
+        font-size: 1.75vw; /* Use viewport width for font size */
         font-weight: 600;
         font-family: 'Gill Sans', sans-serif; /* Change the font */
         position: fixed;
