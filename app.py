@@ -386,6 +386,7 @@ elif navigation == 'Akademi & Högskola':
 
         with col2:
             st.write("")
+            st.write("")
             ytterliggare_filter = st.checkbox('Lägg till fler filter:')
             if ytterliggare_filter:
                 with col3:
