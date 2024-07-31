@@ -773,20 +773,8 @@ elif navigation == 'Forskare':
     # Fetch data
     df = fetch_data_forskare()
 
-    # First Subtitle
-    st.subheader('Jämför forskare efter affiliation')
-
-    # Create search bar
-    search_query = st.text_input("Search within data", "")
-
-    # Filter the DataFrame based on the search query
-    if search_query:
-        filtered_df = df[df.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
-    else:
-        filtered_df = df
-
     # Rename the columns
-    filtered_df = filtered_df.rename(columns={
+    filtered_df = df.rename(columns={
         "name": "Author",
         "citations": "Total Citations",
         "impactful_citations": "Impactful Citations",
@@ -803,17 +791,29 @@ elif navigation == 'Forskare':
 
     # Select relevant columns for display
     columns_to_display = ["Author", "Total Citations", "Impactful Citations", "Number of Papers", "Affiliation"]
-    filtered_df1 = filtered_df[columns_to_display]
+    filtered_df = filtered_df[columns_to_display]
+
+    # First Subtitle
+    st.subheader('Jämför forskare efter affiliation')
+
+    # Create search bar
+    search_query = st.text_input("Search within data", "")
+
+    # Filter the DataFrame based on the search query
+    if search_query:
+        filtered_df2 = filtered_df[filtered_df.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
+    else:
+        filtered_df2 = filtered_df
 
     # Display filtered DataFrame
-    st.dataframe(filtered_df1, width=1600, height=300)
+    st.dataframe(filtered_df2, width=1600, height=300)
 
     # Sort by "Total Citations" in descending order and select the top 10
-    filtered_df2 = filtered_df.sort_values(by="Total Citations", ascending=False).head(20)
+    filtered_df3 = filtered_df2.sort_values(by="Total Citations", ascending=False).head(20)
 
     # Example plot (optional)
-    if not filtered_df2.empty:
-        fig = px.bar(filtered_df2, x='Unique Author', y='Total Citations', title='Citations by Author',
+    if not filtered_df3.empty:
+        fig = px.bar(filtered_df3, x='Unique Author', y='Total Citations', title='Citations by Author',
                     labels={'Unique Author': 'Author', 'Citations': 'Number of Citations'})
         st.plotly_chart(fig)
 
@@ -822,11 +822,11 @@ elif navigation == 'Forskare':
     st.subheader('Jämför individuella forskare')
 
     # Allow users to select authors
-    selected_authors = st.multiselect('Search authors to compare:', filtered_df1['Author'].unique())
+    selected_authors = st.multiselect('Search authors to compare:', filtered_df['Author'].unique())
 
     # Filter the DataFrame based on selected authors
     if selected_authors:
-        selected_data = filtered_df1[filtered_df1['Author'].isin(selected_authors)]
+        selected_data = filtered_df[filtered_df['Author'].isin(selected_authors)]
 
         # Plot the selected data
         fig = px.bar(selected_data, x='Author', y='Total Citations', title='Total Citations by Selected Authors',
@@ -839,19 +839,8 @@ elif navigation == 'Forskare':
     st.write('---')
     st.subheader('Topplista efter antal citat')
 
-    # Fetch data
-    df_topplista = fetch_data_forskare()
-    # Rename the columns
-    df_topplista = df_topplista.rename(columns={
-        "name": "Author",
-        "citations": "Total Citations",
-        "impactful_citations": "Impactful Citations",
-        "paper_count": "Number of Papers",
-        "affiliations": "Affiliation"
-    })
-
     # Reset the index and drop the original index
-    df_topplista = df_topplista.sort_values(by="Total Citations", ascending=False).head(200)
+    df_topplista = filtered_df.sort_values(by="Total Citations", ascending=False).head(200)
     df_topplista = df_topplista.reset_index(drop=True)
     df_topplista.index = df_topplista.index + 1
 
