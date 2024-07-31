@@ -375,7 +375,7 @@ elif navigation == 'Akademi & Högskola':
         # Arrange dropdown menus in columns
         col1, col2 = st.columns(2)
         col3, col4 = st.columns(2)
-        col5, col5, col7 = st.columns(3)
+        col5, col6, col7 = st.columns(3)
         col8, col9 = st.columns(2)
         col10, col11, col12 = st.columns(3)
 
