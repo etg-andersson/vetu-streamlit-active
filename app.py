@@ -385,7 +385,7 @@ elif navigation == 'Akademi & Högskola':
             fran_ar, till_ar = year_range
 
         with col2:
-            ytterliggare_filter = right.checkbox('Lägg till fler filter:')
+            ytterliggare_filter = st.checkbox('Lägg till fler filter:')
             if ytterliggare_filter:
                 with col3:
                     user_type_input = st.selectbox(
