@@ -396,7 +396,7 @@ elif navigation == 'Akademi & Högskola':
                         type_filter = user_type_input
                     else:
                         type_filter = ""
-                with col4
+                with col4:
                     user_text_input = st.text_input(
                         f"Filter for Topic containing:",
                     )
