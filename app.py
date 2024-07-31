@@ -402,7 +402,7 @@ elif navigation == 'Akademi & Högskola':
                                     type_filter = user_type_input
                                 else:
                                     type_filter = ""
-                            elif column = "Topic":
+                            elif column == "Topic":
                                 user_text_input = right.text_input(
                                     f"Filter for {column} containing:",
                                 )
