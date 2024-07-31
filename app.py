@@ -784,14 +784,17 @@ elif navigation == 'Forskare':
     # Add a unique identifier for each row
     df_forskare1["Unique Author"] = df_forskare1["Author"] + " (" + df_forskare1.index.astype(str) + ")"
 
+
+    df_forskare2 = df_forskare1
+
     # Reset the index and drop the original index
-    df_forskare1 = df_forskare1.sort_values(by="Total Citations", ascending=False).head(50)
-    df_forskare1 = df_forskare1.reset_index(drop=True)
-    df_forskare1.index = df_forskare1.index + 1
+    df_forskare2 = df_forskare2.sort_values(by="Total Citations", ascending=False).head(50)
+    df_forskare2 = df_forskare2.reset_index(drop=True)
+    df_forskare2.index = df_forskare2.index + 1
 
     # Select relevant columns for display
     columns_to_display = ["Author", "Total Citations", "Impactful Citations", "Number of Papers", "Affiliation"]
-    df_forskare1 = df_forskare1[columns_to_display]
+    df_forskare2 = df_forskare2[columns_to_display]
 
     # First Subtitle
     st.subheader('Jämför forskare efter affiliation')
@@ -800,7 +803,7 @@ elif navigation == 'Forskare':
     search_query = st.text_input("Search within data", "")
 
     # Filter the DataFrame based on the search query
-    df_forskare2 = df_forskare1
+    
     if search_query:
         df_forskare_resultat = df_forskare2[df_forskare2.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
     else:
