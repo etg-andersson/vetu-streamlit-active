@@ -586,17 +586,18 @@ elif navigation == 'Tidsskrifter':
         modification_container = st.container()
         with modification_container:
             filter_columns = [col for col in df.columns if col != 'Journal']
-            to_filter_columns = st.multiselect("Filter results based on", filter_columns, default=['Year', 'Affiliation'])
+            to_filter_columns = st.multiselect("Filter results based on", filter_columns, default=['Year'])
             for column in to_filter_columns:
                 left, right = st.columns((1, 20))
+
                 if column == "Type":
                     user_type_input = right.selectbox(
                         f"Select {column}",
                         options=df[column].unique(),
                     )
                     df = df[df[column] == user_type_input]
-                elif column == "Affiliation":
-                        
+
+                elif column == "Affiliation": 
                     selected_university = right.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
                     if selected_university != "All":
                         selected_university_code = universities2[universities2['Department'] == selected_university]['Code'].values[0]
@@ -717,38 +718,9 @@ elif navigation == 'Tidsskrifter':
             st.write('---')
     else:
         st.write('Please select filters.')
-        # st.write('')
-        # st.write('')
 
-        # # Group by journal and count the number of papers
-        # journal_counts = filtered_df['Journal'].value_counts().reset_index()
-        # journal_counts.index = journal_counts.index + 1
-        # journal_counts.columns = ['Journal', 'Total Papers']
 
-        # # Display the grouped DataFrame
-        # st.write('---')
-        # st.subheader("Top Journals overall")
-        # st.dataframe(journal_counts.head(50), width=1200, height=400)
-
-        # # Function to truncate journal names
-        # def truncate_journal_name(name, max_length=40):
-        #     if len(name) > max_length:
-        #         return name[:max_length] + '...'
-        #     return name
-
-        # # Apply truncation to the 'Journal' column
-        # journal_counts['Truncated Journal'] = journal_counts['Journal'].apply(truncate_journal_name)
-
-        # # Sort by "Total Papers" in descending order and select the top 10
-        # top_journals = journal_counts.sort_values(by="Total Papers", ascending=False).head(10)
-        
-    #     st.write(' ')
-    #     st.write(' ')
-    #     st.write(' ')
-    #     st.write(' ')
-    #     st.write(' ')
-    #     st.write('---')
-
+    # st.write("---")
     # st.subheader('Top journals overall')
     # st.write(' ')
 
