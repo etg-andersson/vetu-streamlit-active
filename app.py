@@ -21,7 +21,7 @@ st.markdown("""
         background-color: #468499; /* Change this to your desired background color */
         padding: 15px;
         padding-left: 30px;
-        text-align: left;
+        text-align: center;
         color: white;
         font-size: 2vw; /* Use viewport width for font size */
         font-weight: 600;
