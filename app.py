@@ -388,28 +388,22 @@ elif navigation == 'Akademi & Högskola':
             ytterligare_filter = st.button("Lägg till ytterliggare filter")
             if ytterligare_filter:
                 with col3:
-                    modification_container = st.container()
-                    with modification_container:
-                        ytterliggare_filtrering = st.multiselect("Filter articles based on", ["Topic", "Article type"])
-                        for column in ["Topic", "Article type"]:
-                            left, right = st.columns((1, 20))
-                            if column == "Article type":
-                                user_type_input = right.selectbox(
-                                    f"Select {column}",
-                                    options=["Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
-                                )
-                                if user_type_input:
-                                    type_filter = user_type_input
-                                else:
-                                    type_filter = ""
-                            elif column == "Topic":
-                                user_text_input = right.text_input(
-                                    f"Filter for {column} containing:",
-                                )
-                                if user_text_input:
-                                    topic_filter = user_text_input
-                                else:
-                                    topic_filter = ""
+                    user_type_input = st.selectbox(
+                        f"Select article type",
+                        options=["Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
+                    )
+                    if user_type_input:
+                        type_filter = user_type_input
+                    else:
+                        type_filter = ""
+                with col4
+                    user_text_input = st.text_input(
+                        f"Filter for Topic containing:",
+                    )
+                    if user_text_input:
+                        topic_filter = user_text_input
+                    else:
+                        topic_filter = ""
             else: 
                 type_filter = ""
                 topic_filter = ""
