@@ -765,16 +765,16 @@ elif navigation == 'Forskare':
     # Function to fetch data from the database
     def fetch_data_forskare():
         conn = create_conn()
-        query = "SELECT * FROM vetu_authorimpact"
+        query = "SELECT name, citations, impactful_citations, paper_count, affiliations FROM vetu_authorimpact"
         df = pd.read_sql_query(query, conn)
         conn.close()
         return df
 
     # Fetch data
-    df = fetch_data_forskare()
+    df_forskare = fetch_data_forskare()
 
     # Rename the columns
-    filtered_df = df.rename(columns={
+    df_forskare1 = df_forskare.rename(columns={
         "name": "Author",
         "citations": "Total Citations",
         "impactful_citations": "Impactful Citations",
@@ -782,16 +782,16 @@ elif navigation == 'Forskare':
         "affiliations": "Affiliation"
     })
     # Add a unique identifier for each row
-    filtered_df["Unique Author"] = filtered_df["Author"] + " (" + filtered_df.index.astype(str) + ")"
+    df_forskare1["Unique Author"] = df_forskare1["Author"] + " (" + df_forskare1.index.astype(str) + ")"
 
     # Reset the index and drop the original index
-    filtered_df = filtered_df.sort_values(by="Total Citations", ascending=False).head(50)
-    filtered_df = filtered_df.reset_index(drop=True)
-    filtered_df.index = filtered_df.index + 1
+    df_forskare1 = df_forskare1.sort_values(by="Total Citations", ascending=False).head(50)
+    df_forskare1 = df_forskare1.reset_index(drop=True)
+    df_forskare1.index = df_forskare1.index + 1
 
     # Select relevant columns for display
     columns_to_display = ["Author", "Total Citations", "Impactful Citations", "Number of Papers", "Affiliation"]
-    filtered_df = filtered_df[columns_to_display]
+    df_forskare1 = df_forskare1[columns_to_display]
 
     # First Subtitle
     st.subheader('Jämför forskare efter affiliation')
@@ -801,19 +801,19 @@ elif navigation == 'Forskare':
 
     # Filter the DataFrame based on the search query
     if search_query:
-        filtered_df2 = filtered_df[filtered_df.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
+        df_forskare_resultat = df_forskare1[df_forskare1.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
     else:
-        filtered_df2 = filtered_df
+        df_forskare_resultat = df_forskare1
 
     # Display filtered DataFrame
-    st.dataframe(filtered_df2, width=1600, height=300)
+    st.dataframe(df_forskare_resultat, width=1600, height=300)
 
     # Sort by "Total Citations" in descending order and select the top 10
-    filtered_df3 = filtered_df2.sort_values(by="Total Citations", ascending=False).head(20)
+    df_forskare_resultat2 = df_forskare_resultat.sort_values(by="Total Citations", ascending=False).head(20)
 
     # Example plot (optional)
-    if not filtered_df3.empty:
-        fig = px.bar(filtered_df3, x='Unique Author', y='Total Citations', title='Citations by Author',
+    if not df_forskare_resultat2.empty:
+        fig = px.bar(df_forskare_resultat2, x='Unique Author', y='Total Citations', title='Citations by Author',
                     labels={'Unique Author': 'Author', 'Citations': 'Number of Citations'})
         st.plotly_chart(fig)
 
@@ -826,7 +826,7 @@ elif navigation == 'Forskare':
 
     # Filter the DataFrame based on selected authors
     if selected_authors:
-        selected_data = filtered_df[filtered_df['Author'].isin(selected_authors)]
+        selected_data = df_forskare1[df_forskare1['Author'].isin(selected_authors)]
 
         # Plot the selected data
         fig = px.bar(selected_data, x='Author', y='Total Citations', title='Total Citations by Selected Authors',
@@ -840,7 +840,7 @@ elif navigation == 'Forskare':
     st.subheader('Topplista efter antal citat')
 
     # Reset the index and drop the original index
-    df_topplista = filtered_df.sort_values(by="Total Citations", ascending=False).head(200)
+    df_topplista = df_forskare1.sort_values(by="Total Citations", ascending=False).head(200)
     df_topplista = df_topplista.reset_index(drop=True)
     df_topplista.index = df_topplista.index + 1
 
