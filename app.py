@@ -390,10 +390,13 @@ elif navigation == 'Akademi & Högskola':
                 with col3:
                     user_type_input = st.selectbox(
                         f"Select article type",
-                        options=["Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
+                        options=["All", "Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
                     )
                     if user_type_input:
-                        type_filter = user_type_input
+                        if user_type_input == "All":
+                            type_filter = ""
+                        else:
+                            type_filter = user_type_input
                     else:
                         type_filter = ""
                 with col4:
