@@ -813,7 +813,7 @@ elif navigation == 'Forskare':
 
     # Example plot (optional)
     if not df_forskare_resultat2.empty:
-        fig = px.bar(df_forskare_resultat2, x='Unique Author', y='Total Citations', title='Citations by Author',
+        fig = px.bar(df_forskare_resultat2, x='Author', y='Total Citations', title='Citations by Author',
                     labels={'Unique Author': 'Author', 'Citations': 'Number of Citations'})
         st.plotly_chart(fig)
 
