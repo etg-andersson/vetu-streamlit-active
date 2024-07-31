@@ -822,7 +822,7 @@ elif navigation == 'Forskare':
     st.subheader('Jämför individuella forskare')
 
     # Allow users to select authors
-    selected_authors = st.multiselect('Search authors to compare:', filtered_df['Author'].unique())
+    selected_authors = st.multiselect('Search authors to compare:', df_forskare1['Author'].unique())
 
     # Filter the DataFrame based on selected authors
     if selected_authors:
