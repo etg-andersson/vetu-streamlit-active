@@ -856,13 +856,15 @@ elif navigation == 'Forskare':
     st.subheader('Topplista efter antal citat')
 
     # Reset the index and drop the original index
-    df_topplista = df_forskare1.sort_values(by="Total Citations", ascending=False).head(200)
+    df_topplista = df_forskare1
+    df_topplista["Citatations per paper"] = round(df_topplista["Total Citations"] / df_topplista["Number of Papers"])
+    df_topplista = df_topplista.sort_values(by="Citations per paper", ascending=False).head(200)
     df_topplista = df_topplista.reset_index(drop=True)
     df_topplista.index = df_topplista.index + 1
 
     # Show topplista
     # Select relevant columns for display
-    columns_to_display = ["Author", "Total Citations", "Impactful Citations", "Number of Papers", "Affiliation"]
+    columns_to_display = ["Author", "Citations per paper", "Total Citations", "Impactful Citations", "Number of Papers", "Affiliation"]
     df_topplista = df_topplista[columns_to_display]
 
     # Display filtered DataFrame
