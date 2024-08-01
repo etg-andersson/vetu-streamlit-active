@@ -244,7 +244,7 @@ if navigation == 'Översikt':
         papers_per_year = papers_per_year.sort_values('Year')
 
         # Plot the bar chart for total papers published each year
-        fig = px.bar(
+        fig1 = px.bar(
             papers_per_year, 
             x='Year', 
             y='Total Papers', 
@@ -253,7 +253,7 @@ if navigation == 'Översikt':
         )
         
         # Update the x-axis range to start at 1990
-        fig.update_layout(
+        fig1.update_layout(
             xaxis=dict(
                 range=[1989, 2025],
                 tickmode='linear',
@@ -263,7 +263,24 @@ if navigation == 'Översikt':
         )
 
         # Display the plot in Streamlit
-        st.plotly_chart(fig)
+        st.plotly_chart(fig1)
+
+        # Check if 'fig' is defined and is an instance of a Plotly figure
+        if fig1 is not None:
+            # Save the figure to a PDF buffer
+            pdf_buffer = io.BytesIO()
+            fig1.write_image(pdf_buffer, format='pdf')
+
+            # Reset the buffer position to the beginning
+            pdf_buffer.seek(0)
+
+            # Add a button to download the figure as a PDF
+            st.download_button(
+                label="Download as PDF",
+                data=pdf_buffer,
+                file_name="vetu_figure.pdf",
+                mime="application/pdf"
+            )
 
     # Calculate the percentage composition for each year
     composition_df = citation_df.groupby(['year', 'citation_category']).size().reset_index(name='count')
@@ -277,7 +294,7 @@ if navigation == 'Översikt':
     custom_colors = ['#F60909', '#FFF710', '#11C618']  # Red, yellow, green
 
     # Plot the percentage composition as a stacked bar chart
-    fig = px.bar(
+    fig2 = px.bar(
         pivot_df, 
         x=pivot_df.index, 
         y=pivot_df.columns, 
@@ -288,7 +305,7 @@ if navigation == 'Översikt':
     )
 
     # Update the x-axis range to start at 1990
-    fig.update_layout(
+    fig2.update_layout(
         xaxis=dict(
             range=[1990, 2025],
             tickmode='linear',
@@ -302,7 +319,24 @@ if navigation == 'Översikt':
     )
 
     # Display the plot in Streamlit
-    st.plotly_chart(fig)
+    st.plotly_chart(fig2)
+
+    # Check if 'fig' is defined and is an instance of a Plotly figure
+    if fig2 is not None:
+        # Save the figure to a PDF buffer
+        pdf_buffer = io.BytesIO()
+        fig2.write_image(pdf_buffer, format='pdf')
+
+        # Reset the buffer position to the beginning
+        pdf_buffer.seek(0)
+
+        # Add a button to download the figure as a PDF
+        st.download_button(
+            label="Download as PDF",
+            data=pdf_buffer,
+            file_name="vetu_figure.pdf",
+            mime="application/pdf"
+        )
 
     # Prepare the impact data for plotting
     impact_df = impact_df.rename(columns={
@@ -312,7 +346,7 @@ if navigation == 'Översikt':
     }).groupby('Year').sum().reset_index()
 
     # Plot the bar chart for total citations each year
-    fig = px.bar(
+    fig3 = px.bar(
         impact_df, 
         x='Year', 
         y='Total Citations', 
@@ -321,7 +355,7 @@ if navigation == 'Översikt':
     )
 
     # Update the x-axis range to start at 1990
-    fig.update_layout(
+    fig3.update_layout(
         xaxis=dict(
             range=[1989, 2025],
             tickmode='linear',
@@ -331,7 +365,24 @@ if navigation == 'Översikt':
     )
 
     # Display the plot in Streamlit
-    st.plotly_chart(fig)
+    st.plotly_chart(fig3)
+
+    # Check if 'fig' is defined and is an instance of a Plotly figure
+    if fig3 is not None:
+        # Save the figure to a PDF buffer
+        pdf_buffer = io.BytesIO()
+        fig3.write_image(pdf_buffer, format='pdf')
+
+        # Reset the buffer position to the beginning
+        pdf_buffer.seek(0)
+
+        # Add a button to download the figure as a PDF
+        st.download_button(
+            label="Download as PDF",
+            data=pdf_buffer,
+            file_name="vetu_figure.pdf",
+            mime="application/pdf"
+        )
 
 
 elif navigation == 'Akademi & Högskola':
@@ -740,11 +791,29 @@ elif navigation == 'Tidsskrifter':
 
             # Example plot (optional)
             if not top_journals.empty:
-                fig = px.bar(top_journals, x='Truncated Journal', y='Total Papers', title='Total Papers Published in Each Journal',
+                fig1 = px.bar(top_journals, x='Truncated Journal', y='Total Papers', title='Total Papers Published in Each Journal',
                             labels={'Journal': 'Journal', 'Total Papers': 'Number of Papers'})
-                fig.update_layout(width=2000, height=600)
-                st.plotly_chart(fig)
+                fig1.update_layout(width=2000, height=600)
+                st.plotly_chart(fig1)
                 st.write('---')
+
+                # Check if 'fig' is defined and is an instance of a Plotly figure
+                if fig1 is not None:
+                    # Save the figure to a PDF buffer
+                    pdf_buffer = io.BytesIO()
+                    fig1.write_image(pdf_buffer, format='pdf')
+
+                    # Reset the buffer position to the beginning
+                    pdf_buffer.seek(0)
+
+                    # Add a button to download the figure as a PDF
+                    st.download_button(
+                        label="Download as PDF",
+                        data=pdf_buffer,
+                        file_name="vetu_figure.pdf",
+                        mime="application/pdf"
+                    )
+
         else:
             st.write("No matching results found.")
             st.write('---')
@@ -829,9 +898,26 @@ elif navigation == 'Forskare':
 
     # Example plot (optional)
     if not df_forskare_resultat2.empty:
-        fig = px.bar(df_forskare_resultat2, x='Author', y='Total Citations', title='Citations by Author',
+        fig1 = px.bar(df_forskare_resultat2, x='Author', y='Total Citations', title='Citations by Author',
                     labels={'Unique Author': 'Author', 'Citations': 'Number of Citations'})
-        st.plotly_chart(fig)
+        st.plotly_chart(fig1)
+
+        # Check if 'fig' is defined and is an instance of a Plotly figure
+        if fig1 is not None:
+            # Save the figure to a PDF buffer
+            pdf_buffer = io.BytesIO()
+            fig1.write_image(pdf_buffer, format='pdf')
+
+            # Reset the buffer position to the beginning
+            pdf_buffer.seek(0)
+
+            # Add a button to download the figure as a PDF
+            st.download_button(
+                label="Download as PDF",
+                data=pdf_buffer,
+                file_name="vetu_figure.pdf",
+                mime="application/pdf"
+            )
 
     # Second Subtitle
     st.write('---')
@@ -845,9 +931,26 @@ elif navigation == 'Forskare':
         selected_data = df_forskare1[df_forskare1['Author'].isin(selected_authors)]
 
         # Plot the selected data
-        fig = px.bar(selected_data, x='Author', y='Total Citations', title='Total Citations by Selected Authors',
+        fig2 = px.bar(selected_data, x='Author', y='Total Citations', title='Total Citations by Selected Authors',
                     labels={'Author': 'Author', 'Total Citations': 'Number of Citations'})
-        st.plotly_chart(fig)
+        st.plotly_chart(fig2)
+
+        # Check if 'fig' is defined and is an instance of a Plotly figure
+        if fig2 is not None:
+            # Save the figure to a PDF buffer
+            pdf_buffer = io.BytesIO()
+            fig2.write_image(pdf_buffer, format='pdf')
+
+            # Reset the buffer position to the beginning
+            pdf_buffer.seek(0)
+
+            # Add a button to download the figure as a PDF
+            st.download_button(
+                label="Download as PDF",
+                data=pdf_buffer,
+                file_name="vetu_figure.pdf",
+                mime="application/pdf"
+            )
     else:
         st.write("No authors selected.")
 
