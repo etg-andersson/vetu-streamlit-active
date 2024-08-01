@@ -769,7 +769,7 @@ elif navigation == 'Forskare':
     # Function to fetch data from the database
     def fetch_data_forskare():
         conn = create_conn()
-        query = "SELECT name, citations, impactful_citations, paper_count, affiliations WHERE affiliations LIKE 'Sweden' FROM vetu_authorimpact"
+        query = "SELECT name, citations, impactful_citations, paper_count, affiliations FROM vetu_authorimpact WHERE affiliations LIKE 'Sweden'"
         df = pd.read_sql_query(query, conn)
         conn.close()
         return df
