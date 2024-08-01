@@ -279,7 +279,8 @@ if navigation == 'Översikt':
                 label="Download as PDF",
                 data=pdf_buffer,
                 file_name="vetu_figure.pdf",
-                mime="application/pdf"
+                mime="application/pdf",
+                key="oversikt_fig1"
             )
 
     # Calculate the percentage composition for each year
@@ -335,7 +336,8 @@ if navigation == 'Översikt':
             label="Download as PDF",
             data=pdf_buffer,
             file_name="vetu_figure.pdf",
-            mime="application/pdf"
+            mime="application/pdf",
+            key="oversikt_fig2"
         )
 
     # Prepare the impact data for plotting
@@ -381,7 +383,8 @@ if navigation == 'Översikt':
             label="Download as PDF",
             data=pdf_buffer,
             file_name="vetu_figure.pdf",
-            mime="application/pdf"
+            mime="application/pdf",
+            key="oversikt_fig3"
         )
 
 
@@ -620,7 +623,8 @@ elif navigation == 'Akademi & Högskola':
             label="Download as PDF",
             data=pdf_buffer,
             file_name="vetu_figure.pdf",
-            mime="application/pdf"
+            mime="application/pdf",
+            key="university_fig1"
         )
 
 elif navigation == 'Finansiärer':
@@ -811,7 +815,8 @@ elif navigation == 'Tidsskrifter':
                         label="Download as PDF",
                         data=pdf_buffer,
                         file_name="vetu_figure.pdf",
-                        mime="application/pdf"
+                        mime="application/pdf",
+                        key="journal_fig1"
                     )
 
         else:
@@ -916,7 +921,8 @@ elif navigation == 'Forskare':
                 label="Download as PDF",
                 data=pdf_buffer,
                 file_name="vetu_figure.pdf",
-                mime="application/pdf"
+                mime="application/pdf",
+                key="author_fig1"
             )
 
     # Second Subtitle
@@ -949,7 +955,8 @@ elif navigation == 'Forskare':
                 label="Download as PDF",
                 data=pdf_buffer,
                 file_name="vetu_figure.pdf",
-                mime="application/pdf"
+                mime="application/pdf",
+                key="author_fig2"
             )
     else:
         st.write("No authors selected.")
