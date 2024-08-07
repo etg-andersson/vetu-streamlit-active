@@ -391,6 +391,7 @@ if navigation == 'Översikt':
 elif navigation == 'Akademi & Högskola':
 
     # Function to fetch data from the database based on filters
+    #### Tillfällig filter för titel istället för topic
     def fetch_data(university, institute, department, topic_filter, type_filter, from_year, to_year):
         conditions = []
         if university != "All":
@@ -400,7 +401,9 @@ elif navigation == 'Akademi & Högskola':
         if department != "All":
             conditions.append(f"affiliations LIKE '%{department}%'")
         if topic_filter != "":
-            conditions.append(f"title LIKE '%{topic_filter}%'")
+            topics = topic_filter.split(',')
+            topic_conditions = [f"title LIKE '%{topic.strip()}%'" for topic in topics]
+            conditions.append(f"({' OR '.join(topic_conditions)})")
         if type_filter != "":
             conditions.append(f"publication_type LIKE '%{type_filter}%'")
         conditions.append(f"year >= {from_year}")
@@ -409,15 +412,29 @@ elif navigation == 'Akademi & Högskola':
         where_clause = " AND ".join(conditions)
 
         query = f"""
-            SELECT year, COUNT(*) as publication_count
+            SELECT year, title, COUNT(*) as publication_count
             FROM vetu_paper
             WHERE {where_clause}
-            GROUP BY year
-            ORDER BY year;
+            GROUP BY year, title
+            ORDER BY year, title;
         """
         conn = create_conn()
         df = pd.read_sql(query, conn)
         conn.close()
+
+        # Create a new column 'topic' based on the keywords in 'topic_filter'
+        def get_topic(title, topics):
+            for topic in topics:
+                if topic.strip().lower() in title.lower():
+                    return topic.strip()
+            return 'Other'
+
+        if topic_filter != "":
+            topics = topic_filter.split(',')
+            df['topic'] = df['title'].apply(lambda x: get_topic(x, topics))
+        else:
+            df['topic'] = 'Other'
+
         return df
 
     # Create a box containing four dropdown menus
@@ -541,90 +558,92 @@ elif navigation == 'Akademi & Högskola':
     data = fetch_data(selected_university, selected_institute, selected_department, topic_filter, type_filter, fran_ar, till_ar)
 
     
-    if data.empty and not data2.empty:
-        fig = px.bar(data2, x='year', y='publication_count', title='Publications Over Time',
-            labels={'year': 'Year', 'publication_count': 'Number of Publications'})
+    # Function to create horizontal bar chart
+    def create_horizontal_bar_chart(data, title):
+        fig = px.bar(data, y='year', x='publication_count', color='topic', orientation='h', 
+                    title=title, labels={'year': 'Year', 'publication_count': 'Number of Publications', 'topic': 'Topic'})
         fig.update_layout(
-        xaxis=dict(
-            tickmode='linear',
-            tick0=fran_ar,
-            dtick=1,
-            range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
+            yaxis=dict(
+                tickmode='linear',
+                tick0=fran_ar,
+                dtick=1,
+                range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+            )
         )
-        st.plotly_chart(fig)
-        st.write("No data available for the first selection.")
-    elif data2.empty and not data.empty:
-        fig = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
-            labels={'year': 'Year', 'publication_count': 'Number of Publications'})
+        return fig
+
+    # Create the original chart (publications over time)
+    def create_publications_over_time_chart(data, title):
+        fig = px.bar(data, x='year', y='publication_count', title=title,
+                    labels={'year': 'Year', 'publication_count': 'Number of Publications'})
         fig.update_layout(
-        xaxis=dict(
-            tickmode='linear',
-            tick0=fran_ar,
-            dtick=1,
-            range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
-        )
-        st.plotly_chart(fig)
-        if jamfor_box:
-            st.write("No data available for second selection.")
-    elif data.empty and data2.empty:
-        st.write("No data available for either selection.")
-        fig = None
-    elif not data.empty and not data2.empty:
-        if selected_university == selected_university_comp and selected_institute == selected_institute_comp and selected_department == selected_department_comp:
-            fig = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
-            labels={'year': 'Year', 'publication_count': 'Number of Publications'})
-            fig.update_layout(
             xaxis=dict(
                 tickmode='linear',
                 tick0=fran_ar,
                 dtick=1,
-                range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
+                range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
             )
-        else:
-            # Combine data for side-by-side plotting
-            data['Type'] = f"{selected_university} - {selected_institute} - {selected_department}"
-            data2['Type'] = f"{selected_university_comp} - {selected_institute_comp} - {selected_department_comp}"
+        )
+        return fig
 
-            combined_data = pd.concat([data, data2])
+    # Display the original chart based on the data
+    if not data.empty and not jamfor_box:
+        fig1 = create_publications_over_time_chart(data, 'Publications Over Time')
+        st.plotly_chart(fig1)
 
-            fig = px.bar(combined_data, x='year', y='publication_count', color='Type', barmode='group',
-                        title='Publications Over Time',
-                        labels={'year': 'Year', 'publication_count': 'Number of Publications'})
-            fig.update_layout(
-                xaxis=dict(
-                    tickmode='linear',
-                    tick0=min(data['year'].min(), data2['year'].min()),
-                    dtick=1
-                ),
-                legend=dict(
-                    orientation='h',  # Horizontal legend
-                    yanchor='top',  # Anchor the legend at the top
-                    y=-0.2,  # Position the legend below the graph
-                    xanchor='center',  # Center the legend horizontally
-                    x=0.5  # Align the legend at the center of the x-axis
-                ),
-                legend_title_text='Ursprung'
-                )
+    # Display the comparison chart based on the data
+    if not data.empty and not data2.empty:
+        data['Type'] = f"{selected_university} - {selected_institute} - {selected_department}"
+        data2['Type'] = f"{selected_university_comp} - {selected_institute_comp} - {selected_department_comp}"
+        
+        combined_data = pd.concat([data, data2])
+        fig1 = create_publications_over_time_chart(combined_data, 'Publications Over Time (Comparison)')
+        st.plotly_chart(fig1)
 
-        # Display the figure in Streamlit
-        st.plotly_chart(fig)
+    # Display the new horizontal bar chart categorized by topic
+    if not data.empty and not jamfor_box:
+        fig2 = create_horizontal_bar_chart(data, 'Publications Categorized by Topic')
+        st.plotly_chart(fig2)
 
-    # Check if 'fig' is defined and is an instance of a Plotly figure
-    if fig is not None:
-        # Save the figure to a PDF buffer
+    elif not data.empty and not data2.empty:
+        data['Type'] = f"{selected_university} - {selected_institute} - {selected_department}"
+        data2['Type'] = f"{selected_university_comp} - {selected_institute_comp} - {selected_department_comp}"
+        
+        combined_data = pd.concat([data, data2])
+        fig2 = create_horizontal_bar_chart(combined_data, 'Publications Categorized by Topic (Comparison)')
+        st.plotly_chart(fig2)
+
+    elif not data.empty and data2.empty:
+        fig2 = create_horizontal_bar_chart(data, 'Publications Categorized by Topic')
+        st.plotly_chart(fig2)
+        st.write("No data available for the second selection.")
+
+    elif data.empty and not data2.empty:
+        fig2 = create_horizontal_bar_chart(data2, 'Publications Categorized by Topic')
+        st.plotly_chart(fig2)
+        st.write("No data available for the first selection.")
+
+    # Add download button for PDF
+    if 'fig1' in locals():
         pdf_buffer = io.BytesIO()
-        fig.write_image(pdf_buffer, format='pdf')
-
-        # Reset the buffer position to the beginning
+        fig1.write_image(pdf_buffer, format='pdf')
         pdf_buffer.seek(0)
-
-        # Add a button to download the figure as a PDF
         st.download_button(
-            label="Download as PDF",
+            label="Download Publications Over Time as PDF",
             data=pdf_buffer,
-            file_name="vetu_figure.pdf",
-            mime="application/pdf",
-            key="university_fig1"
+            file_name="publications_over_time.pdf",
+            mime="application/pdf"
+        )
+
+    if 'fig2' in locals():
+        pdf_buffer = io.BytesIO()
+        fig2.write_image(pdf_buffer, format='pdf')
+        pdf_buffer.seek(0)
+        st.download_button(
+            label="Download Publications Categorized by Topic as PDF",
+            data=pdf_buffer,
+            file_name="publications_by_topic.pdf",
+            mime="application/pdf"
         )
 
 elif navigation == 'Finansiärer':
