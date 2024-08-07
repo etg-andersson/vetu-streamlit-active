@@ -400,7 +400,7 @@ elif navigation == 'Akademi & Högskola':
         if department != "All":
             conditions.append(f"affiliations LIKE '%{department}%'")
         if topic_filter != "":
-            conditions.append(f"topic LIKE '%{topic_filter}%'")
+            conditions.append(f"title LIKE '%{topic_filter}%'")
         if type_filter != "":
             conditions.append(f"publication_type LIKE '%{type_filter}%'")
         conditions.append(f"year >= {from_year}")
