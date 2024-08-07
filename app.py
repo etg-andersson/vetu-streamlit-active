@@ -412,11 +412,11 @@ elif navigation == 'Akademi & Högskola':
         where_clause = " AND ".join(conditions)
 
         query = f"""
-            SELECT year, title, COUNT(*) as publication_count
+            SELECT affiliations, year, title, COUNT(*) as publication_count
             FROM vetu_paper
             WHERE {where_clause}
-            GROUP BY year, title
-            ORDER BY year, title;
+            GROUP BY affiliations, year, title
+            ORDER BY affiliations, year, title;
         """
         conn = create_conn()
         df = pd.read_sql(query, conn)
