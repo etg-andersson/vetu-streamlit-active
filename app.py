@@ -518,34 +518,69 @@ elif navigation == 'Akademi & Högskola':
         )
         return fig
 
-    # Create the original chart (publications over time)
-    def create_publications_over_time_chart(data, title):
-        data['university_group'] = data['affiliations'].apply(lambda x: f"{selected_university} - {selected_institute} - {selected_department}")
-        fig = px.bar(data, x='year', y='publication_count', color='university_group', title=title,
-                    labels={'year': 'Year', 'publication_count': 'Number of Publications', 'university_group': 'University/Institute/Department'})
-        fig.update_layout(
+    if data.empty and not data2.empty:
+        fig1 = px.bar(data2, x='year', y='publication_count', title='Publications Over Time',
+            labels={'year': 'Year', 'publication_count': 'Number of Publications'})
+        fig1.update_layout(
+        xaxis=dict(
+            tickmode='linear',
+            tick0=fran_ar,
+            dtick=1,
+            range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
+        )
+        st.plotly_chart(fig1)
+        st.write("No data available for the first selection.")
+    elif data2.empty and not data.empty:
+        fig1 = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
+            labels={'year': 'Year', 'publication_count': 'Number of Publications'})
+        fig1.update_layout(
+        xaxis=dict(
+            tickmode='linear',
+            tick0=fran_ar,
+            dtick=1,
+            range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
+        )
+        st.plotly_chart(fig1)
+        if jamfor_box:
+            st.write("No data available for second selection.")
+    elif data.empty and data2.empty:
+        st.write("No data available for either selection.")
+        fig1 = None
+    elif not data.empty and not data2.empty:
+        if selected_university == selected_university_comp and selected_institute == selected_institute_comp and selected_department == selected_department_comp:
+            fig1 = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
+            labels={'year': 'Year', 'publication_count': 'Number of Publications'})
+            fig1.update_layout(
             xaxis=dict(
                 tickmode='linear',
                 tick0=fran_ar,
                 dtick=1,
-                range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
-            ),
-            barmode='stack'
-        )
-        return fig
-
-    # Display the original chart based on the data
-    if not data.empty and not jamfor_box:
-        fig1 = create_publications_over_time_chart(data, 'Publications Over Time')
-        st.plotly_chart(fig1)
-
-    # Display the comparison chart based on the data
-    if not data.empty and not data2.empty:
-        data['Type'] = f"{selected_university} - {selected_institute} - {selected_department}"
-        data2['Type'] = f"{selected_university_comp} - {selected_institute_comp} - {selected_department_comp}"
-        
-        combined_data = pd.concat([data, data2])
-        fig1 = create_publications_over_time_chart(combined_data, 'Publications Over Time (Comparison)')
+                range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
+            )
+        else:
+            # Combine data for side-by-side plotting
+            data['Type'] = f"{selected_university} - {selected_institute} - {selected_department}"
+            data2['Type'] = f"{selected_university_comp} - {selected_institute_comp} - {selected_department_comp}"
+            combined_data = pd.concat([data, data2])
+            fig1 = px.bar(combined_data, x='year', y='publication_count', color='Type', barmode='group',
+                        title='Publications Over Time',
+                        labels={'year': 'Year', 'publication_count': 'Number of Publications'})
+            fig1.update_layout(
+                xaxis=dict(
+                    tickmode='linear',
+                    tick0=min(data['year'].min(), data2['year'].min()),
+                    dtick=1
+                ),
+                legend=dict(
+                    orientation='h',  # Horizontal legend
+                    yanchor='top',  # Anchor the legend at the top
+                    y=-0.2,  # Position the legend below the graph
+                    xanchor='center',  # Center the legend horizontally
+                    x=0.5  # Align the legend at the center of the x-axis
+                ),
+                legend_title_text='Ursprung'
+                )
+        # Display the figure in Streamlit
         st.plotly_chart(fig1)
 
     # Display the new horizontal bar chart categorized by topic
