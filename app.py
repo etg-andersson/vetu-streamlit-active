@@ -412,33 +412,18 @@ elif navigation == 'Akademi & Högskola':
         where_clause = " AND ".join(conditions)
 
         query = f"""
-            SELECT affiliations, year, title, COUNT(*) as publication_count
+            SELECT year, COUNT(*) as publication_count
             FROM vetu_paper
             WHERE {where_clause}
-            GROUP BY affiliations, year, title
-            ORDER BY affiliations, year, title;
+            GROUP BY year
+            ORDER BY year;
         """
         conn = create_conn()
         df = pd.read_sql(query, conn)
         conn.close()
-
-        # Create a new column 'topic' based on the keywords in 'topic_filter'
-        def get_topic(title, topics):
-            for topic in topics:
-                if topic.strip().lower() in title.lower():
-                    return topic.strip()
-            return 'Other'
-
-        if topic_filter != "":
-            topics = topic_filter.split(',')
-            df['topic'] = df['title'].apply(lambda x: get_topic(x, topics))
-        else:
-            df['topic'] = 'Other'
-
         return df
 
-    # Create a box containing dropdown menus and other controls
-    # Create a box containing dropdown menus and other controls
+    # Create a box containing four dropdown menus
     with st.container():
         # Generate a list of years from 1990 to 2024
         fran_ar_list = list(range(1990, 2025))
@@ -453,7 +438,7 @@ elif navigation == 'Akademi & Högskola':
 
         # Other dropdown menus
         with col1:
-            year_range = st.slider('År:', min_value=1990, max_value=2024, value=(1990, 2024))  # År slider
+            year_range = st.slider('År:', min_value=1990, max_value=2024, value=(1990, 2024)) # År slider
             fran_ar, till_ar = year_range
 
         with col2:
@@ -466,91 +451,132 @@ elif navigation == 'Akademi & Högskola':
                         f"Select article type",
                         options=["All", "Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
                     )
-                    type_filter = "" if user_type_input == "All" else user_type_input
-
+                    if user_type_input:
+                        if user_type_input == "All":
+                            type_filter = ""
+                        else:
+                            type_filter = user_type_input
+                    else:
+                        type_filter = ""
                 with col4:
                     user_text_input = st.text_input(
-                        f"Filter for Topics (separated by commas):",
+                        f"Filter for Topic containing:",
                     )
-                    topic_filter = user_text_input if user_text_input else ""
-            else:
+                    if user_text_input:
+                        topic_filter = user_text_input
+                    else:
+                        topic_filter = ""
+            else: 
                 type_filter = ""
                 topic_filter = ""
 
         with col5:
-            selected_university = st.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0)  # Universitet
-            selected_university_code = "" if selected_university == "All" else universities2[universities2['Department'] == selected_university]['Code'].values[0]
+            selected_university = st.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
+            if selected_university != "All":
+                selected_university_code = universities2[universities2['Department'] == selected_university]['Code'].values[0]
+            else:
+                selected_university_code = ""
 
         with col6:
-            selected_institute = st.selectbox('Institut:', ["All"] if selected_university == "All" else ["All"] + universities2[(universities2['Code'].str.startswith(selected_university_code + '.')) & (universities2['Code'].str.count('\.') == 1)]['Department'].tolist(), index=0)  # Institut
-            selected_institute_code = "" if selected_institute == "All" else universities2[universities2['Department'] == selected_institute]['Code'].values[0]
+            if selected_university == "ALL":
+                st.selectbox('Institut:', ["All"])
+            else:
+                selected_institute = st.selectbox('Institut:',
+                ["All"] + universities2[
+                    (universities2['Code'].str.startswith(selected_university_code + '.')) & (universities2['Code'].str.count('\.')== 1)]['Department'].tolist(), index=0
+                ) # Institut
+                if selected_institute != "All":
+                    selected_institute_code = universities2[universities2['Department'] == selected_institute]['Code'].values[0]
+                else:
+                    selected_institute_code = ""
 
-        with col7:
-            selected_department = st.selectbox('Department:', ["All"] if selected_institute == "All" else ["All"] + universities2[(universities2['Code'].str.startswith(selected_institute_code + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0)  # Avdelning
+        with col7:    
+            if selected_institute == "ALL":
+                st.selectbox('Department:', ["All"])
+            else:
+                selected_department = st.selectbox('Department:', 
+                ["All"] + universities2[
+                    (universities2['Code'].str.startswith(selected_institute_code + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
+                ) # Avdelning
 
         with col8:
             jamfor_box = st.checkbox('Jämför')
             if jamfor_box:
                 with col10:
-                    selected_university_comp = st.selectbox('Jämför med Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0)  # Universitet
-                    selected_university_code_comp = "" if selected_university_comp == "All" else universities2[universities2['Department'] == selected_university_comp]['Code'].values[0]
+                    selected_university_comp = st.selectbox('Jämför med Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
+                    if selected_university_comp != "All":
+                        selected_university_code_comp = universities2[universities2['Department'] == selected_university_comp]['Code'].values[0]
+                    else:
+                        selected_university_code_comp = ""
 
                 with col11:
-                    selected_institute_comp = st.selectbox('Jämför med Institut:', ["All"] if selected_university_comp == "All" else ["All"] + universities2[(universities2['Code'].str.startswith(selected_university_code_comp + '.')) & (universities2['Code'].str.count('\.') == 1)]['Department'].tolist(), index=0)  # Institut
-                    selected_institute_code_comp = "" if selected_institute_comp == "All" else universities2[universities2['Department'] == selected_institute_comp]['Code'].values[0]
+                    if selected_university_comp == "ALL":
+                        st.selectbox('Institut:', ["All"])
+                    else:
+                        selected_institute_comp = st.selectbox('Jämför med Institut:',
+                        ["All"] + universities2[
+                            (universities2['Code'].str.startswith(selected_university_code_comp + '.')) & (universities2['Code'].str.count('\.')== 1)]['Department'].tolist(), index=0
+                        ) # Institut
+                        if selected_institute_comp != "All":
+                            selected_institute_code_comp = universities2[universities2['Department'] == selected_institute_comp]['Code'].values[0]
+                        else:
+                            selected_institute_code_comp = ""
 
-                with col12:
-                    selected_department_comp = st.selectbox('Jämför med Department:', ["All"] if selected_institute_comp == "All" else ["All"] + universities2[(universities2['Code'].str.startswith(selected_institute_code_comp + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0)  # Avdelning
-                    data2 = fetch_data(selected_university_comp, selected_institute_comp, selected_department_comp, topic_filter, type_filter, fran_ar, till_ar)
+                with col12:    
+                    if selected_institute_comp == "ALL":
+                        st.selectbox('Department:', ["All"])
+                    else:
+                        selected_department_comp = st.selectbox('Jämför med Department:', 
+                        ["All"] + universities2[
+                            (universities2['Code'].str.startswith(selected_institute_code_comp + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
+                        ) # Avdelning
+                
+                data2 = fetch_data(selected_university_comp, selected_institute_comp, selected_department_comp, topic_filter, type_filter, fran_ar, till_ar)
+
             else:
                 data2 = pd.DataFrame()
+        
+        with col9:
+            pass          
+
 
     # Fetch the data
     data = fetch_data(selected_university, selected_institute, selected_department, topic_filter, type_filter, fran_ar, till_ar)
 
-    # Function to create horizontal bar chart
-    def create_horizontal_bar_chart(data, title):
-        data['university_group'] = data['affiliations'].apply(lambda x: f"{selected_university} - {selected_institute} - {selected_department}")
-        fig = px.bar(data, y='university_group', x='publication_count', color='topic', orientation='h', 
-                    title=title, labels={'university_group': 'University/Institute/Department', 'publication_count': 'Number of Publications', 'topic': 'Topic'})
-        fig.update_layout(
-            barmode='stack'
-        )
-        return fig
-
+    
     if data.empty and not data2.empty:
-        fig1 = px.bar(data2, x='year', y='publication_count', title='Publications Over Time',
+        fig = px.bar(data2, x='year', y='publication_count', title='Publications Over Time',
             labels={'year': 'Year', 'publication_count': 'Number of Publications'})
-        fig1.update_layout(
+        fig.update_layout(
         xaxis=dict(
             tickmode='linear',
             tick0=fran_ar,
             dtick=1,
             range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
         )
-        st.plotly_chart(fig1)
+        st.plotly_chart(fig)
         st.write("No data available for the first selection.")
     elif data2.empty and not data.empty:
-        fig1 = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
+        fig = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
             labels={'year': 'Year', 'publication_count': 'Number of Publications'})
-        fig1.update_layout(
+        fig.update_layout(
         xaxis=dict(
             tickmode='linear',
             tick0=fran_ar,
             dtick=1,
             range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
         )
-        st.plotly_chart(fig1)
+        st.plotly_chart(fig)
         if jamfor_box:
             st.write("No data available for second selection.")
     elif data.empty and data2.empty:
         st.write("No data available for either selection.")
-        fig1 = None
+        fig = None
     elif not data.empty and not data2.empty:
         if selected_university == selected_university_comp and selected_institute == selected_institute_comp and selected_department == selected_department_comp:
-            fig1 = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
+            fig = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
             labels={'year': 'Year', 'publication_count': 'Number of Publications'})
-            fig1.update_layout(
+            fig.update_layout(
             xaxis=dict(
                 tickmode='linear',
                 tick0=fran_ar,
@@ -561,11 +587,13 @@ elif navigation == 'Akademi & Högskola':
             # Combine data for side-by-side plotting
             data['Type'] = f"{selected_university} - {selected_institute} - {selected_department}"
             data2['Type'] = f"{selected_university_comp} - {selected_institute_comp} - {selected_department_comp}"
+
             combined_data = pd.concat([data, data2])
-            fig1 = px.bar(combined_data, x='year', y='publication_count', color='Type', barmode='group',
+
+            fig = px.bar(combined_data, x='year', y='publication_count', color='Type', barmode='group',
                         title='Publications Over Time',
                         labels={'year': 'Year', 'publication_count': 'Number of Publications'})
-            fig1.update_layout(
+            fig.update_layout(
                 xaxis=dict(
                     tickmode='linear',
                     tick0=min(data['year'].min(), data2['year'].min()),
@@ -580,53 +608,26 @@ elif navigation == 'Akademi & Högskola':
                 ),
                 legend_title_text='Ursprung'
                 )
+
         # Display the figure in Streamlit
-        st.plotly_chart(fig1)
+        st.plotly_chart(fig)
 
-    # Display the new horizontal bar chart categorized by topic
-    if not data.empty and not jamfor_box:
-        fig2 = create_horizontal_bar_chart(data, 'Publications Categorized by Topic')
-        st.plotly_chart(fig2)
-
-    elif not data.empty and not data2.empty:
-        data['Type'] = f"{selected_university} - {selected_institute} - {selected_department}"
-        data2['Type'] = f"{selected_university_comp} - {selected_institute_comp} - {selected_department_comp}"
-        
-        combined_data = pd.concat([data, data2])
-        fig2 = create_horizontal_bar_chart(combined_data, 'Publications Categorized by Topic (Comparison)')
-        st.plotly_chart(fig2)
-
-    elif not data.empty and data2.empty:
-        fig2 = create_horizontal_bar_chart(data, 'Publications Categorized by Topic')
-        st.plotly_chart(fig2)
-        st.write("No data available for the second selection.")
-
-    elif data.empty and not data2.empty:
-        fig2 = create_horizontal_bar_chart(data2, 'Publications Categorized by Topic')
-        st.plotly_chart(fig2)
-        st.write("No data available for the first selection.")
-
-    # Add download button for PDF
-    if 'fig1' in locals():
+    # Check if 'fig' is defined and is an instance of a Plotly figure
+    if fig is not None:
+        # Save the figure to a PDF buffer
         pdf_buffer = io.BytesIO()
-        fig1.write_image(pdf_buffer, format='pdf')
-        pdf_buffer.seek(0)
-        st.download_button(
-            label="Download Publications Over Time as PDF",
-            data=pdf_buffer,
-            file_name="publications_over_time.pdf",
-            mime="application/pdf"
-        )
+        fig.write_image(pdf_buffer, format='pdf')
 
-    if 'fig2' in locals():
-        pdf_buffer = io.BytesIO()
-        fig2.write_image(pdf_buffer, format='pdf')
+        # Reset the buffer position to the beginning
         pdf_buffer.seek(0)
+
+        # Add a button to download the figure as a PDF
         st.download_button(
-            label="Download Publications Categorized by Topic as PDF",
+            label="Download as PDF",
             data=pdf_buffer,
-            file_name="publications_by_topic.pdf",
-            mime="application/pdf"
+            file_name="vetu_figure.pdf",
+            mime="application/pdf",
+            key="university_fig1"
         )
 
 elif navigation == 'Finansiärer':
