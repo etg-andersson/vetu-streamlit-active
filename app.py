@@ -438,6 +438,7 @@ elif navigation == 'Akademi & Högskola':
         return df
 
     # Create a box containing dropdown menus and other controls
+    # Create a box containing dropdown menus and other controls
     with st.container():
         # Generate a list of years from 1990 to 2024
         fran_ar_list = list(range(1990, 2025))
@@ -512,6 +513,9 @@ elif navigation == 'Akademi & Högskola':
         data['university_group'] = data['affiliations'].apply(lambda x: f"{selected_university} - {selected_institute} - {selected_department}")
         fig = px.bar(data, y='university_group', x='publication_count', color='topic', orientation='h', 
                     title=title, labels={'university_group': 'University/Institute/Department', 'publication_count': 'Number of Publications', 'topic': 'Topic'})
+        fig.update_layout(
+            barmode='stack'
+        )
         return fig
 
     # Create the original chart (publications over time)
@@ -525,7 +529,8 @@ elif navigation == 'Akademi & Högskola':
                 tick0=fran_ar,
                 dtick=1,
                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
-            )
+            ),
+            barmode='stack'
         )
         return fig
 
