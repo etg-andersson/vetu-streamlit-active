@@ -136,6 +136,7 @@ universities2['Code'] = universities2['Code'].astype(str)
 #Import topic codes indexing
 topic_codes_df = pd.read_csv(file_path_topic_codes, sep=';')
 topic_codes_df['Code'] = topic_codes_df['Code'].astype(str)
+
 # Extract unique major areas and specialties
 major_areas = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 3) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'])
 specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 5) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'])
@@ -826,6 +827,7 @@ elif navigation == 'Region (ALF)':
                 filtered_specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.startswith(major_code) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
                 filtered_specialties.insert(0, "All")
                 selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
+                specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
 
     else:
         title_filter = ""
@@ -845,9 +847,9 @@ elif navigation == 'Region (ALF)':
 
     # Fetch the data based on the search terms
     if search_text:
-        data1 = fetch_affiliations(search_text, type_filter, topic_filter, major_area_code, specialty_code, fran_ar, till_ar)
+        data1 = fetch_affiliations(search_text, type_filter, topic_filter, major_code, specialty_code, fran_ar, till_ar)
         if search_text_2:
-            data2 = fetch_affiliations(search_text_2, type_filter, topic_filter, major_area_code, specialty_code, fran_ar, till_ar)
+            data2 = fetch_affiliations(search_text_2, type_filter, topic_filter, major_code, specialty_code, fran_ar, till_ar)
         else:
             data2 = pd.DataFrame()
 
