@@ -725,7 +725,7 @@ elif navigation == 'Akademi & Högskola':
         st.write("No data available for the given search terms and year range.")
 
 elif navigation == 'Region (ALF)':
-    def fetch_affiliations(search_text, type_filter, topic_filter, major_area_code, specialty_code, from_year, to_year):
+    def fetch_affiliations(search_text, type_filter, topic_filter, major_code, specialty_code, from_year, to_year):
         conditions = []
         
         # Remove commas from the input search text
@@ -754,14 +754,14 @@ elif navigation == 'Region (ALF)':
         if type_filter:
             conditions.append(f"publication_type ILIKE '%{type_filter}%'")
         
-        if topic_filter:
-            topics = topic_filter.split(',')
-            topic_conditions = [f"title ILIKE '%{topic.strip()}%'" for topic in topics]
-            conditions.append(f"({' OR '.join(topic_conditions)})")
+        if title_filter:
+            titles = title_filter.split(',')
+            title_conditions = [f"title ILIKE '%{title.strip()}%'" for title in titles]
+            conditions.append(f"({' OR '.join(title_conditions)})")
         
-        if major_area_code != "All":
+        if major_code != "All":
             if specialty_code == "All":
-                conditions.append(f"topic_codes ILIKE '%{major_area_code}%'")
+                conditions.append(f"topic_codes ILIKE '%{major_code}%'")
             else:
                 conditions.append(f"topic_codes ILIKE '%{specialty_code}%'")
         
