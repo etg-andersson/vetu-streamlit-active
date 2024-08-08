@@ -1041,7 +1041,7 @@ elif navigation == 'Region (ALF)':
         where_clause = " AND ".join(conditions)
 
         query = f"""
-            SELECT year, COUNT(*) as publication_count
+            SELECT year, COUNT(*) as publication_count, SUM(citations) as total_citations
             FROM vetu_paper
             WHERE {where_clause}
             GROUP BY year
@@ -1055,7 +1055,7 @@ elif navigation == 'Region (ALF)':
         return df
     
     # Create a Streamlit page for affiliation search
-    st.header("Affiliation Search")
+    st.subheader("Affiliation Search")
 
     # Create a year range slider
     year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
@@ -1081,8 +1081,8 @@ elif navigation == 'Region (ALF)':
         else:
             data2 = pd.DataFrame()
 
-        # Function to create the bar chart
-        def create_affiliations_chart(data1, data2, title):
+        # Function to create the bar chart for publication count
+        def create_publications_chart(data1, data2, title):
             data1['Search'] = 'Search 1'
             if not data2.empty:
                 data2['Search'] = 'Search 2'
@@ -1102,19 +1102,54 @@ elif navigation == 'Region (ALF)':
             )
             return fig
 
-        # Display the chart
+        # Function to create the bar chart for total citations
+        def create_citations_chart(data1, data2, title):
+            data1['Search'] = 'Search 1'
+            if not data2.empty:
+                data2['Search'] = 'Search 2'
+                combined_data = pd.concat([data1, data2])
+            else:
+                combined_data = data1
+
+            fig = px.bar(combined_data, x='year', y='total_citations', color='Search', barmode='group',
+                        title=title, labels={'year': 'Year', 'total_citations': 'Total Citations', 'Search': 'Search Query'})
+            fig.update_layout(
+                xaxis=dict(
+                    tickmode='linear',
+                    tick0=fran_ar,
+                    dtick=1,
+                    range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+                )
+            )
+            return fig
+
+        # Display the publication count chart
         if not data1.empty:
-            fig = create_affiliations_chart(data1, data2, 'Publications Over Time')
-            st.plotly_chart(fig)
+            fig1 = create_publications_chart(data1, data2, 'Publications Over Time')
+            st.plotly_chart(fig1)
             
-            # Add a download button for the chart
-            pdf_buffer = io.BytesIO()
-            fig.write_image(pdf_buffer, format='pdf')
-            pdf_buffer.seek(0)
+            # Display the total citations chart
+            fig2 = create_citations_chart(data1, data2, 'Total Citations Over Time')
+            st.plotly_chart(fig2)
+            
+            # Add download buttons for the charts
+            pdf_buffer1 = io.BytesIO()
+            fig1.write_image(pdf_buffer1, format='pdf')
+            pdf_buffer1.seek(0)
             st.download_button(
-                label="Download chart as PDF",
-                data=pdf_buffer,
-                file_name="affiliations_chart.pdf",
+                label="Download publications chart as PDF",
+                data=pdf_buffer1,
+                file_name="publications_chart.pdf",
+                mime="application/pdf"
+            )
+            
+            pdf_buffer2 = io.BytesIO()
+            fig2.write_image(pdf_buffer2, format='pdf')
+            pdf_buffer2.seek(0)
+            st.download_button(
+                label="Download citations chart as PDF",
+                data=pdf_buffer2,
+                file_name="citations_chart.pdf",
                 mime="application/pdf"
             )
         else:
