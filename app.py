@@ -839,6 +839,8 @@ elif navigation == 'Region (ALF)':
     else:
         title_filter = ""
         type_filter = ""
+        major_code = "All"
+        specialty_code = "All"
 
     # Create a text input for search terms
     search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
