@@ -827,7 +827,10 @@ elif navigation == 'Region (ALF)':
                 filtered_specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.startswith(major_code) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
                 filtered_specialties.insert(0, "All")
                 selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
-                specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
+                if not topic_codes_df[topic_codes_df['Swedish'] == selected_specialty].empty:
+                    specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
+                else:
+                    pass
 
     else:
         title_filter = ""
