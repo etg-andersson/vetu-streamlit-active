@@ -830,7 +830,7 @@ elif navigation == 'Region (ALF)':
                 if not topic_codes_df[topic_codes_df['Swedish'] == selected_specialty].empty:
                     specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
                 else:
-                    pass
+                    specialty_code = ""
 
     else:
         title_filter = ""
