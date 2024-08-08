@@ -412,7 +412,7 @@ elif navigation == 'Akademi & Högskola':
         where_clause = " AND ".join(conditions)
 
         query = f"""
-            SELECT year, COUNT(*) as publication_count
+            SELECT year, COUNT(*) as publication_count, SUM(citations) as total_citations, AVG(citations) as avg_citations_per_paper
             FROM vetu_paper
             WHERE {where_clause}
             GROUP BY year
@@ -543,92 +543,156 @@ elif navigation == 'Akademi & Högskola':
     # Fetch the data
     data = fetch_data(selected_university, selected_institute, selected_department, topic_filter, type_filter, fran_ar, till_ar)
 
-    
-    if data.empty and not data2.empty:
-        fig = px.bar(data2, x='year', y='publication_count', title='Publications Over Time',
-            labels={'year': 'Year', 'publication_count': 'Number of Publications'})
+    # Function to create the bar chart for publication count
+    def create_publications_chart(data1, data2, title):
+        data1['Search'] = 'Search 1'
+        if not data2.empty:
+            data2['Search'] = 'Search 2'
+            combined_data = pd.concat([data1, data2])
+        else:
+            combined_data = data1
+
+        fig = px.bar(combined_data, x='year', y='publication_count', color='Search', barmode='group',
+                    title=title, labels={'year': 'Year', 'publication_count': 'Number of Publications', 'Search': 'Search Query'})
         fig.update_layout(
-        xaxis=dict(
-            tickmode='linear',
-            tick0=fran_ar,
-            dtick=1,
-            range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
-        )
-        st.plotly_chart(fig)
-        st.write("No data available for the first selection.")
-    elif data2.empty and not data.empty:
-        fig = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
-            labels={'year': 'Year', 'publication_count': 'Number of Publications'})
-        fig.update_layout(
-        xaxis=dict(
-            tickmode='linear',
-            tick0=fran_ar,
-            dtick=1,
-            range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
-        )
-        st.plotly_chart(fig)
-        if jamfor_box:
-            st.write("No data available for second selection.")
-    elif data.empty and data2.empty:
-        st.write("No data available for either selection.")
-        fig = None
-    elif not data.empty and not data2.empty:
-        if selected_university == selected_university_comp and selected_institute == selected_institute_comp and selected_department == selected_department_comp:
-            fig = px.bar(data, x='year', y='publication_count', title='Publications Over Time',
-            labels={'year': 'Year', 'publication_count': 'Number of Publications'})
-            fig.update_layout(
             xaxis=dict(
                 tickmode='linear',
                 tick0=fran_ar,
                 dtick=1,
-                range=[fran_ar-0.5, till_ar+0.5])  # Use selected from_year and to_year for range
+                range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
             )
-        else:
-            # Combine data for side-by-side plotting
-            data['Type'] = f"{selected_university} - {selected_institute} - {selected_department}"
-            data2['Type'] = f"{selected_university_comp} - {selected_institute_comp} - {selected_department_comp}"
-
-            combined_data = pd.concat([data, data2])
-
-            fig = px.bar(combined_data, x='year', y='publication_count', color='Type', barmode='group',
-                        title='Publications Over Time',
-                        labels={'year': 'Year', 'publication_count': 'Number of Publications'})
-            fig.update_layout(
-                xaxis=dict(
-                    tickmode='linear',
-                    tick0=min(data['year'].min(), data2['year'].min()),
-                    dtick=1
-                ),
-                legend=dict(
-                    orientation='h',  # Horizontal legend
-                    yanchor='top',  # Anchor the legend at the top
-                    y=-0.2,  # Position the legend below the graph
-                    xanchor='center',  # Center the legend horizontally
-                    x=0.5  # Align the legend at the center of the x-axis
-                ),
-                legend_title_text='Ursprung'
-                )
-
-        # Display the figure in Streamlit
-        st.plotly_chart(fig)
-
-    # Check if 'fig' is defined and is an instance of a Plotly figure
-    if fig is not None:
-        # Save the figure to a PDF buffer
-        pdf_buffer = io.BytesIO()
-        fig.write_image(pdf_buffer, format='pdf')
-
-        # Reset the buffer position to the beginning
-        pdf_buffer.seek(0)
-
-        # Add a button to download the figure as a PDF
-        st.download_button(
-            label="Download as PDF",
-            data=pdf_buffer,
-            file_name="vetu_figure.pdf",
-            mime="application/pdf",
-            key="university_fig1"
         )
+        return fig
+
+    # Function to create the bar chart for total citations
+    def create_citations_chart(data1, data2, title):
+        data1['Search'] = 'Search 1'
+        if not data2.empty:
+            data2['Search'] = 'Search 2'
+            combined_data = pd.concat([data1, data2])
+        else:
+            combined_data = data1
+
+        fig = px.bar(combined_data, x='year', y='total_citations', color='Search', barmode='group',
+                    title=title, labels={'year': 'Year', 'total_citations': 'Total Citations', 'Search': 'Search Query'})
+        fig.update_layout(
+            xaxis=dict(
+                tickmode='linear',
+                tick0=fran_ar,
+                dtick=1,
+                range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+            )
+        )
+        return fig
+
+    # Function to create the bar chart for average citations per paper
+    def create_avg_citations_chart(data1, data2, title):
+        data1['Search'] = 'Search 1'
+        if not data2.empty:
+            data2['Search'] = 'Search 2'
+            combined_data = pd.concat([data1, data2])
+        else:
+            combined_data = data1
+
+        fig = px.bar(combined_data, x='year', y='avg_citations_per_paper', color='Search', barmode='group',
+                    title=title, labels={'year': 'Year', 'avg_citations_per_paper': 'Average Citations per Paper', 'Search': 'Search Query'})
+        fig.update_layout(
+            xaxis=dict(
+                tickmode='linear',
+                tick0=fran_ar,
+                dtick=1,
+                range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+            )
+        )
+        return fig
+
+    # Display the publication count chart
+    if not data.empty and not jamfor_box:
+        fig1 = create_publications_chart(data, data2, 'Publications Over Time')
+        st.plotly_chart(fig1)
+    elif not data.empty and not data2.empty:
+        fig1 = create_publications_chart(data, data2, 'Publications Over Time (Comparison)')
+        st.plotly_chart(fig1)
+
+    # Display the total citations chart
+    if not data.empty and not jamfor_box:
+        fig2 = create_citations_chart(data, data2, 'Total Citations Over Time')
+        st.plotly_chart(fig2)
+    elif not data.empty and not data2.empty:
+        fig2 = create_citations_chart(data, data2, 'Total Citations Over Time (Comparison)')
+        st.plotly_chart(fig2)
+
+    # Display the average citations per paper chart
+    if not data.empty and not jamfor_box:
+        fig3 = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time')
+        st.plotly_chart(fig3)
+    elif not data.empty and not data2.empty:
+        fig3 = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time (Comparison)')
+        st.plotly_chart(fig3)
+
+    # Add download buttons for the charts
+    if not data.empty and not data2.empty:
+        pdf_buffer1 = io.BytesIO()
+        fig1.write_image(pdf_buffer1, format='pdf')
+        pdf_buffer1.seek(0)
+        st.download_button(
+            label="Download publications chart as PDF",
+            data=pdf_buffer1,
+            file_name="publications_chart.pdf",
+            mime="application/pdf"
+        )
+        
+        pdf_buffer2 = io.BytesIO()
+        fig2.write_image(pdf_buffer2, format='pdf')
+        pdf_buffer2.seek(0)
+        st.download_button(
+            label="Download total citations chart as PDF",
+            data=pdf_buffer2,
+            file_name="citations_chart.pdf",
+            mime="application/pdf"
+        )
+
+        pdf_buffer3 = io.BytesIO()
+        fig3.write_image(pdf_buffer3, format='pdf')
+        pdf_buffer3.seek(0)
+        st.download_button(
+            label="Download average citations per paper chart as PDF",
+            data=pdf_buffer3,
+            file_name="avg_citations_chart.pdf",
+            mime="application/pdf"
+        )
+    elif not data.empty:
+        pdf_buffer1 = io.BytesIO()
+        fig1.write_image(pdf_buffer1, format='pdf')
+        pdf_buffer1.seek(0)
+        st.download_button(
+            label="Download publications chart as PDF",
+            data=pdf_buffer1,
+            file_name="publications_chart.pdf",
+            mime="application/pdf"
+        )
+        
+        pdf_buffer2 = io.BytesIO()
+        fig2.write_image(pdf_buffer2, format='pdf')
+        pdf_buffer2.seek(0)
+        st.download_button(
+            label="Download total citations chart as PDF",
+            data=pdf_buffer2,
+            file_name="citations_chart.pdf",
+            mime="application/pdf"
+        )
+
+        pdf_buffer3 = io.BytesIO()
+        fig3.write_image(pdf_buffer3, format='pdf')
+        pdf_buffer3.seek(0)
+        st.download_button(
+            label="Download average citations per paper chart as PDF",
+            data=pdf_buffer3,
+            file_name="avg_citations_chart.pdf",
+            mime="application/pdf"
+        )
+    else:
+        st.write("No data available for the given search terms and year range.")
 
 elif navigation == 'Finansiärer':
     st.write('Funktionen kommer snart')
