@@ -850,9 +850,9 @@ elif navigation == 'Region (ALF)':
 
     # Fetch the data based on the search terms
     if search_text:
-        data1 = fetch_affiliations(search_text, type_filter, topic_filter, major_code, specialty_code, fran_ar, till_ar)
+        data1 = fetch_affiliations(search_text, type_filter, title_filter, major_code, specialty_code, fran_ar, till_ar)
         if search_text_2:
-            data2 = fetch_affiliations(search_text_2, type_filter, topic_filter, major_code, specialty_code, fran_ar, till_ar)
+            data2 = fetch_affiliations(search_text_2, type_filter, title_filter, major_code, specialty_code, fran_ar, till_ar)
         else:
             data2 = pd.DataFrame()
 
