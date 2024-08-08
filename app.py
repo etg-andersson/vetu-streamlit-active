@@ -766,7 +766,7 @@ elif navigation == 'Region (ALF)':
     search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
 
     # Add a checkbox for comparison
-    compare = st.checkbox("Jämför")
+    compare = st.checkbox("Jämför", value=False)
 
     # Conditional second search bar for comparison
     if compare:
