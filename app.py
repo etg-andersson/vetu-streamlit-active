@@ -534,6 +534,9 @@ elif navigation == 'Akademi & Högskola':
                 data2 = fetch_data(selected_university_comp, selected_institute_comp, selected_department_comp, topic_filter, type_filter, fran_ar, till_ar)
 
             else:
+                selected_university_comp = ""
+                selected_institute_comp = ""
+                selected_department_comp = ""
                 data2 = pd.DataFrame()
         
         with col9:
