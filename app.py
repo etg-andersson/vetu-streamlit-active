@@ -1020,11 +1020,11 @@ elif navigation == 'Region (ALF)':
             if '"' in query:
                 exact_phrases = [phrase.strip('"') for phrase in query.split('"') if phrase]
                 for phrase in exact_phrases:
-                    conditions.append(f"affiliations LIKE '%;{phrase};%'")
+                    conditions.append(f"affiliations LIKE '%{phrase}%'")
             else:
                 # Split the query by spaces for unordered search terms
                 terms = query.split()
-                term_conditions = [f"affiliations LIKE '%;%; {term} ;%;%' OR affiliations LIKE '%; {term} ;%;'" for term in terms]
+                term_conditions = [f"affiliations LIKE '%{term}%'" for term in terms]
                 conditions.append(f"({' AND '.join(term_conditions)})")
 
         conditions.append(f"year >= {from_year}")
@@ -1039,6 +1039,7 @@ elif navigation == 'Region (ALF)':
             GROUP BY year
             ORDER BY year;
         """
+        
         conn = create_conn()
         df = pd.read_sql(query, conn)
         conn.close()
@@ -1046,7 +1047,7 @@ elif navigation == 'Region (ALF)':
         return df
     
     # Create a Streamlit page for affiliation search
-    st.title("Affiliation Search")
+    st.header("Affiliation Search")
 
     # Create a text input for search terms
     search_text = st.text_input("Enter search terms (use commas to separate multiple queries):")
