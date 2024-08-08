@@ -543,11 +543,32 @@ elif navigation == 'Akademi & Högskola':
     # Fetch the data
     data = fetch_data(selected_university, selected_institute, selected_department, topic_filter, type_filter, fran_ar, till_ar)
 
+    # Check if search 1 and search 2 are the same
+    same_search = (
+        selected_university == selected_university_comp and
+        selected_institute == selected_institute_comp and
+        selected_department == selected_department_comp
+    )
+
+    # Helper function to create search description for legend
+    def create_search_description(university, institute, department):
+        desc = []
+        if university != "All":
+            desc.append(university)
+        if institute != "All":
+            desc.append(institute)
+        if department != "All":
+            desc.append(department)
+        return " - ".join(desc) if desc else "All"
+
     # Function to create the bar chart for publication count
     def create_publications_chart(data1, data2, title):
-        data1['Search'] = 'Search 1'
-        if not data2.empty:
-            data2['Search'] = 'Search 2'
+        search1_desc = create_search_description(selected_university, selected_institute, selected_department)
+        search2_desc = create_search_description(selected_university_comp, selected_institute_comp, selected_department_comp)
+        
+        data1['Search'] = search1_desc if not same_search else 'Search'
+        if not data2.empty and not same_search:
+            data2['Search'] = search2_desc
             combined_data = pd.concat([data1, data2])
         else:
             combined_data = data1
@@ -566,9 +587,12 @@ elif navigation == 'Akademi & Högskola':
 
     # Function to create the bar chart for total citations
     def create_citations_chart(data1, data2, title):
-        data1['Search'] = 'Search 1'
-        if not data2.empty:
-            data2['Search'] = 'Search 2'
+        search1_desc = create_search_description(selected_university, selected_institute, selected_department)
+        search2_desc = create_search_description(selected_university_comp, selected_institute_comp, selected_department_comp)
+        
+        data1['Search'] = search1_desc if not same_search else 'Search'
+        if not data2.empty and not same_search:
+            data2['Search'] = search2_desc
             combined_data = pd.concat([data1, data2])
         else:
             combined_data = data1
@@ -587,9 +611,12 @@ elif navigation == 'Akademi & Högskola':
 
     # Function to create the bar chart for average citations per paper
     def create_avg_citations_chart(data1, data2, title):
-        data1['Search'] = 'Search 1'
-        if not data2.empty:
-            data2['Search'] = 'Search 2'
+        search1_desc = create_search_description(selected_university, selected_institute, selected_department)
+        search2_desc = create_search_description(selected_university_comp, selected_institute_comp, selected_department_comp)
+        
+        data1['Search'] = search1_desc if not same_search else 'Search'
+        if not data2.empty and not same_search:
+            data2['Search'] = search2_desc
             combined_data = pd.concat([data1, data2])
         else:
             combined_data = data1
@@ -607,61 +634,22 @@ elif navigation == 'Akademi & Högskola':
         return fig
 
     # Display the publication count chart
-    if not data.empty and not jamfor_box:
+    if not data.empty:
         fig1 = create_publications_chart(data, data2, 'Publications Over Time')
-        st.plotly_chart(fig1)
-    elif not data.empty and not data2.empty:
-        fig1 = create_publications_chart(data, data2, 'Publications Over Time (Comparison)')
         st.plotly_chart(fig1)
 
     # Display the total citations chart
-    if not data.empty and not jamfor_box:
+    if not data.empty:
         fig2 = create_citations_chart(data, data2, 'Total Citations Over Time')
-        st.plotly_chart(fig2)
-    elif not data.empty and not data2.empty:
-        fig2 = create_citations_chart(data, data2, 'Total Citations Over Time (Comparison)')
         st.plotly_chart(fig2)
 
     # Display the average citations per paper chart
-    if not data.empty and not jamfor_box:
+    if not data.empty:
         fig3 = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time')
-        st.plotly_chart(fig3)
-    elif not data.empty and not data2.empty:
-        fig3 = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time (Comparison)')
         st.plotly_chart(fig3)
 
     # Add download buttons for the charts
-    if not data.empty and not data2.empty:
-        pdf_buffer1 = io.BytesIO()
-        fig1.write_image(pdf_buffer1, format='pdf')
-        pdf_buffer1.seek(0)
-        st.download_button(
-            label="Download publications chart as PDF",
-            data=pdf_buffer1,
-            file_name="publications_chart.pdf",
-            mime="application/pdf"
-        )
-        
-        pdf_buffer2 = io.BytesIO()
-        fig2.write_image(pdf_buffer2, format='pdf')
-        pdf_buffer2.seek(0)
-        st.download_button(
-            label="Download total citations chart as PDF",
-            data=pdf_buffer2,
-            file_name="citations_chart.pdf",
-            mime="application/pdf"
-        )
-
-        pdf_buffer3 = io.BytesIO()
-        fig3.write_image(pdf_buffer3, format='pdf')
-        pdf_buffer3.seek(0)
-        st.download_button(
-            label="Download average citations per paper chart as PDF",
-            data=pdf_buffer3,
-            file_name="avg_citations_chart.pdf",
-            mime="application/pdf"
-        )
-    elif not data.empty:
+    if not data.empty:
         pdf_buffer1 = io.BytesIO()
         fig1.write_image(pdf_buffer1, format='pdf')
         pdf_buffer1.seek(0)
