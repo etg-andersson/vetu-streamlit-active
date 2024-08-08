@@ -116,6 +116,7 @@ pio.templates.default = "ggplot2"
 # Construct file paths using Pathlib
 file_path_university = 'affiliations_university_norm.csv'
 file_path_university2 = 'affiliations_university_decoder_list.csv'
+file_path_topic_codes = 'Topic_Codes.csv'
 
 # Read the CSV files
 try:
@@ -131,6 +132,8 @@ universities['Code'] = universities['Code'].astype(str)
 # Load university decoder list data
 universities2 = pd.read_csv(file_path_university2)
 universities2['Code'] = universities2['Code'].astype(str)
+
+topic_codes_list = pd.read_csv(file_path_topic_codes)
 
 # Accessing Supabase secrets
 secrets = st.secrets["supabase"]
@@ -461,16 +464,16 @@ elif navigation == 'Akademi & Högskola':
                     else:
                         type_filter = ""
                 with col4:
-                    user_text_input = st.text_input(
+                    user_title_input = st.text_input(
                         f"Filter for Topic containing:",
                     )
-                    if user_text_input:
-                        topic_filter = user_text_input
+                    if user_title_input:
+                        title_filter = user_title_input
                     else:
-                        topic_filter = ""
+                        title_filter = ""
             else: 
                 type_filter = ""
-                topic_filter = ""
+                title_filter = ""
 
         with col5:
             selected_university = st.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
@@ -533,7 +536,7 @@ elif navigation == 'Akademi & Högskola':
                             (universities2['Code'].str.startswith(selected_institute_code_comp + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
                         ) # Avdelning
                 
-                data2 = fetch_data(selected_university_comp, selected_institute_comp, selected_department_comp, topic_filter, type_filter, fran_ar, till_ar)
+                data2 = fetch_data(selected_university_comp, selected_institute_comp, selected_department_comp, title_filter, type_filter, fran_ar, till_ar)
 
             else:
                 selected_university_comp = ""
@@ -546,7 +549,7 @@ elif navigation == 'Akademi & Högskola':
 
 
     # Fetch the data
-    data = fetch_data(selected_university, selected_institute, selected_department, topic_filter, type_filter, fran_ar, till_ar)
+    data = fetch_data(selected_university, selected_institute, selected_department, title_filter, type_filter, fran_ar, till_ar)
 
     # Check if search 1 and search 2 are the same
     same_search = (
@@ -791,12 +794,12 @@ elif navigation == 'Region (ALF)':
             type_filter = "" if user_type_input == "All" else user_type_input
 
         with col4:
-            user_text_input = st.text_input(
+            user_title_input = st.text_input(
                 f"Filter for Topic containing:",
             )
-            topic_filter = user_text_input if user_text_input else ""
+            topic_filter = user_title_input if user_title_input else ""
     else:
-        topic_filter = ""
+        title_filter = ""
         type_filter = ""
 
     # Create a text input for search terms
@@ -813,9 +816,9 @@ elif navigation == 'Region (ALF)':
 
     # Fetch the data based on the search terms
     if search_text:
-        data1 = fetch_affiliations(search_text, type_filter, topic_filter, fran_ar, till_ar)
+        data1 = fetch_affiliations(search_text, type_filter, title_filter, fran_ar, till_ar)
         if search_text_2:
-            data2 = fetch_affiliations(search_text_2, type_filter, topic_filter, fran_ar, till_ar)
+            data2 = fetch_affiliations(search_text_2, type_filter, title_filter, fran_ar, till_ar)
         else:
             data2 = pd.DataFrame()
 
