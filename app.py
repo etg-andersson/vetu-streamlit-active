@@ -1009,7 +1009,89 @@ elif navigation == 'Innovation':
     st.write('Funktionen kommer snart')
 
 elif navigation == 'Region (ALF)':
-    st.write('Funktionen kommer snart')
+    def fetch_affiliations(search_text, from_year, to_year):
+        conditions = []
+        
+        # Parse the search_text for multiple search queries separated by commas
+        search_queries = [query.strip() for query in search_text.split(',')]
+        
+        for query in search_queries:
+            # Check if the query is within quotes for exact order
+            if '"' in query:
+                exact_phrases = [phrase.strip('"') for phrase in query.split('"') if phrase]
+                for phrase in exact_phrases:
+                    conditions.append(f"affiliations LIKE '%;{phrase};%'")
+            else:
+                # Split the query by spaces for unordered search terms
+                terms = query.split()
+                term_conditions = [f"affiliations LIKE '%;%; {term} ;%;%' OR affiliations LIKE '%; {term} ;%;'" for term in terms]
+                conditions.append(f"({' AND '.join(term_conditions)})")
+
+        conditions.append(f"year >= {from_year}")
+        conditions.append(f"year <= {to_year}")
+        
+        where_clause = " AND ".join(conditions)
+
+        query = f"""
+            SELECT year, COUNT(*) as publication_count
+            FROM vetu_paper
+            WHERE {where_clause}
+            GROUP BY year
+            ORDER BY year;
+        """
+        conn = create_conn()
+        df = pd.read_sql(query, conn)
+        conn.close()
+        
+        return df
+    
+    # Create a Streamlit page for affiliation search
+    st.title("Affiliation Search")
+
+    # Create a text input for search terms
+    search_text = st.text_input("Enter search terms (use commas to separate multiple queries):")
+
+    # Create a year range slider
+    year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
+    fran_ar, till_ar = year_range
+
+    # Fetch the data based on the search terms
+    if search_text:
+        data = fetch_affiliations(search_text, fran_ar, till_ar)
+
+        # Function to create the bar chart
+        def create_affiliations_chart(data, title):
+            fig = px.bar(data, x='year', y='publication_count', title=title,
+                        labels={'year': 'Year', 'publication_count': 'Number of Publications'})
+            fig.update_layout(
+                xaxis=dict(
+                    tickmode='linear',
+                    tick0=fran_ar,
+                    dtick=1,
+                    range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+                ),
+                barmode='stack'
+            )
+            return fig
+
+        # Display the chart
+        if not data.empty:
+            fig = create_affiliations_chart(data, 'Publications Over Time')
+            st.plotly_chart(fig)
+            
+            # Add a download button for the chart
+            pdf_buffer = io.BytesIO()
+            fig.write_image(pdf_buffer, format='pdf')
+            pdf_buffer.seek(0)
+            st.download_button(
+                label="Download chart as PDF",
+                data=pdf_buffer,
+                file_name="affiliations_chart.pdf",
+                mime="application/pdf"
+            )
+        else:
+            st.write("No data available for the given search terms and year range.")
+
 
 elif navigation == 'Sök Artiklar':
 
