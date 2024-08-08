@@ -210,15 +210,17 @@ if navigation == 'Översikt':
         total_papers_cited_5_or_less = citation_df[citation_df['citation_category'].isin(['≤5 Citations'])].shape[0]
         percentage_papers_cited_5_or_less = round(total_papers_cited_5_or_less * 100 / total_papers, 2)
 
+        percentage_papers_cited_more_than_10 = 100 - total_papers_cited_10_or_less - total_papers_cited_5_or_less
+
         # Display the info box
         st.markdown(f"""
         <div style="background-color: #d9d9d9; padding: 20px; border-radius: 15px;">
             <h3 style="color: #333;">Impact Summary</h3>
             <p><strong>Total Citations:</strong> {total_citations}</p>
-            <p><strong>Total Impactful Citations:</strong> {total_impactful_citations}</p>
             <p><strong>Total Number of Papers:</strong> {total_papers}</p>
             <p><strong>Total Number of Authors:</strong> {total_authors}</p>
-            <p><strong>Percentage of Papers with ≤10 citations:</strong> {percentage_papers_cited_10_or_less}%</p>
+            <p><strong>Percentage of Papers with >10 citations:</strong> {percentage_papers_cited_more_than_10}%</p>
+            <p><strong>Percentage of Papers with 6-10 citations:</strong> {percentage_papers_cited_10_or_less}%</p>
             <p><strong>Percentage of Papers with ≤5 citations:</strong> {percentage_papers_cited_5_or_less}%</p>
         </div>
         """, unsafe_allow_html=True)
