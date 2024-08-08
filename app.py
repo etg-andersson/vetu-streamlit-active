@@ -544,11 +544,12 @@ elif navigation == 'Akademi & Högskola':
     data = fetch_data(selected_university, selected_institute, selected_department, topic_filter, type_filter, fran_ar, till_ar)
 
     # Check if search 1 and search 2 are the same
-    same_search = (
-        selected_university == selected_university_comp and
-        selected_institute == selected_institute_comp and
-        selected_department == selected_department_comp
-    )
+    if jamfor_box:
+        same_search = (
+            selected_university == selected_university_comp and
+            selected_institute == selected_institute_comp and
+            selected_department == selected_department_comp
+        )
 
     # Helper function to create search description for legend
     def create_search_description(university, institute, department):
