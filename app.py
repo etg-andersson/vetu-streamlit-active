@@ -790,6 +790,9 @@ elif navigation == 'Region (ALF)':
                 f"Filter for Topic containing:",
             )
             topic_filter = user_text_input if user_text_input else ""
+    else:
+        topic_filter = ""
+        type_filter = ""
 
     # Create a text input for search terms
     search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
