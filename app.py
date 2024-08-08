@@ -766,24 +766,30 @@ elif navigation == 'Region (ALF)':
     # Create a Streamlit page for affiliation search
     st.subheader("Affiliation Search")
 
-    # Create a year range slider
-    year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
-    fran_ar, till_ar = year_range
-
-    # Additional filters for article type and topic
     col1, col2 = st.columns(2)
     with col1:
-        user_type_input = st.selectbox(
-            f"Select article type",
-            options=["All", "Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
-        )
-        type_filter = "" if user_type_input == "All" else user_type_input
+        # Create a year range slider
+        year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
+        fran_ar, till_ar = year_range
+    
+    with col2: 
+        additional_filters = st.checkbox("Lägg till fler filter")
+    
+    if additional_filters:
+        # Additional filters for article type and topic
+        col3, col4 = st.columns(2)
+        with col3:
+            user_type_input = st.selectbox(
+                f"Select article type",
+                options=["All", "Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
+            )
+            type_filter = "" if user_type_input == "All" else user_type_input
 
-    with col2:
-        user_text_input = st.text_input(
-            f"Filter for Topic containing:",
-        )
-        topic_filter = user_text_input if user_text_input else ""
+        with col4:
+            user_text_input = st.text_input(
+                f"Filter for Topic containing:",
+            )
+            topic_filter = user_text_input if user_text_input else ""
 
     # Create a text input for search terms
     search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
