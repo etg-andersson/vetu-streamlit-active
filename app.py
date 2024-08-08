@@ -1057,12 +1057,12 @@ elif navigation == 'Region (ALF)':
     # Create a Streamlit page for affiliation search
     st.header("Affiliation Search")
 
-    # Create a text input for search terms
-    search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
-
     # Create a year range slider
     year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
     fran_ar, till_ar = year_range
+
+    # Create a text input for search terms
+    search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
 
     # Add a checkbox for comparison
     compare = st.checkbox("Jämför")
