@@ -137,8 +137,8 @@ universities2['Code'] = universities2['Code'].astype(str)
 topic_codes_df = pd.read_csv(file_path_topic_codes, sep=';')
 topic_codes_df['Code'] = topic_codes_df['Code'].astype(str)
 # Extract unique major areas and specialties
-major_areas = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 3) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'].unique())
-specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 5) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'].unique())
+major_areas = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 3) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'])
+specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 5) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'])
 
 # Add "All" option to the dropdowns
 major_areas.insert(0, "All")
