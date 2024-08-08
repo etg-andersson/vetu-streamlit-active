@@ -821,13 +821,17 @@ elif navigation == 'Region (ALF)':
         with col6:
             if selected_major_area == "All":
                 selected_specialty = st.selectbox("Select Specialty", ["All"])
+                major_code = "All"
+                specialty_code = "All"
             else:
                 # Filter specialties based on selected major area
                 major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
                 filtered_specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.startswith(major_code) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
                 filtered_specialties.insert(0, "All")
                 selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
-                if not topic_codes_df[topic_codes_df['Swedish'] == selected_specialty].empty:
+                if selected_specialty == "All":
+                    specialty_code = "All"
+                elif not topic_codes_df[topic_codes_df['Swedish'] == selected_specialty].empty:
                     specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
                 else:
                     specialty_code = ""
