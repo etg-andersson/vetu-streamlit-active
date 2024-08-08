@@ -813,7 +813,7 @@ elif navigation == 'Region (ALF)':
             user_title_input = st.text_input(
                 f"Filter for Topic containing:",
             )
-            topic_filter = user_title_input if user_title_input else ""
+            title_filter = user_title_input if user_title_input else ""
 
         with col5:
             selected_major_area = st.selectbox("Select Major Area", major_areas)
