@@ -1041,7 +1041,7 @@ elif navigation == 'Region (ALF)':
         where_clause = " AND ".join(conditions)
 
         query = f"""
-            SELECT year, COUNT(*) as publication_count, SUM(citations) as total_citations
+            SELECT year, COUNT(*) as publication_count, SUM(citations) as total_citations, AVG(citations) as avg_citations_per_paper
             FROM vetu_paper
             WHERE {where_clause}
             GROUP BY year
@@ -1123,6 +1123,27 @@ elif navigation == 'Region (ALF)':
             )
             return fig
 
+        # Function to create the bar chart for average citations per paper
+        def create_avg_citations_chart(data1, data2, title):
+            data1['Search'] = 'Search 1'
+            if not data2.empty:
+                data2['Search'] = 'Search 2'
+                combined_data = pd.concat([data1, data2])
+            else:
+                combined_data = data1
+
+            fig = px.bar(combined_data, x='year', y='avg_citations_per_paper', color='Search', barmode='group',
+                        title=title, labels={'year': 'Year', 'avg_citations_per_paper': 'Average Citations per Paper', 'Search': 'Search Query'})
+            fig.update_layout(
+                xaxis=dict(
+                    tickmode='linear',
+                    tick0=fran_ar,
+                    dtick=1,
+                    range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+                )
+            )
+            return fig
+
         # Display the publication count chart
         if not data1.empty:
             fig1 = create_publications_chart(data1, data2, 'Publications Over Time')
@@ -1131,6 +1152,10 @@ elif navigation == 'Region (ALF)':
             # Display the total citations chart
             fig2 = create_citations_chart(data1, data2, 'Total Citations Over Time')
             st.plotly_chart(fig2)
+
+            # Display the average citations per paper chart
+            fig3 = create_avg_citations_chart(data1, data2, 'Average Citations per Paper Over Time')
+            st.plotly_chart(fig3)
             
             # Add download buttons for the charts
             pdf_buffer1 = io.BytesIO()
@@ -1147,9 +1172,19 @@ elif navigation == 'Region (ALF)':
             fig2.write_image(pdf_buffer2, format='pdf')
             pdf_buffer2.seek(0)
             st.download_button(
-                label="Download citations chart as PDF",
+                label="Download total citations chart as PDF",
                 data=pdf_buffer2,
                 file_name="citations_chart.pdf",
+                mime="application/pdf"
+            )
+
+            pdf_buffer3 = io.BytesIO()
+            fig3.write_image(pdf_buffer3, format='pdf')
+            pdf_buffer3.seek(0)
+            st.download_button(
+                label="Download average citations per paper chart as PDF",
+                data=pdf_buffer3,
+                file_name="avg_citations_chart.pdf",
                 mime="application/pdf"
             )
         else:
