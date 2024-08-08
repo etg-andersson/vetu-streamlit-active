@@ -133,7 +133,15 @@ universities['Code'] = universities['Code'].astype(str)
 universities2 = pd.read_csv(file_path_university2)
 universities2['Code'] = universities2['Code'].astype(str)
 
-topic_codes_list = pd.read_csv(file_path_topic_codes)
+#Import topic codes indexing
+topic_codes_df = pd.read_csv(file_path_topic_codes)
+# Extract unique major areas and specialties
+major_areas = sorted(topic_codes_df[topic_codes_df['code'].str.len() == 3]['description'].unique())
+specialties = sorted(topic_codes_df[topic_codes_df['code'].str.len() == 5]['description'].unique())
+
+# Add "All" option to the dropdowns
+major_areas.insert(0, "All")
+specialties.insert(0, "All")
 
 # Accessing Supabase secrets
 secrets = st.secrets["supabase"]
@@ -715,8 +723,7 @@ elif navigation == 'Akademi & Högskola':
         st.write("No data available for the given search terms and year range.")
 
 elif navigation == 'Region (ALF)':
-    # Function to fetch data from the database based on filters
-    def fetch_affiliations(search_text, type_filter, topic_filter, from_year, to_year):
+    def fetch_affiliations(search_text, type_filter, topic_filter, major_area_code, specialty_code, from_year, to_year):
         conditions = []
         
         # Remove commas from the input search text
@@ -749,6 +756,12 @@ elif navigation == 'Region (ALF)':
             topics = topic_filter.split(',')
             topic_conditions = [f"title ILIKE '%{topic.strip()}%'" for topic in topics]
             conditions.append(f"({' OR '.join(topic_conditions)})")
+        
+        if major_area_code != "All":
+            if specialty_code == "All":
+                conditions.append(f"topic_codes ILIKE '%{major_area_code}%'")
+            else:
+                conditions.append(f"topic_codes ILIKE '%{specialty_code}%'")
         
         conditions.append(f"year >= {from_year}")
         conditions.append(f"year <= {to_year}")
@@ -786,6 +799,7 @@ elif navigation == 'Region (ALF)':
     if additional_filters:
         # Additional filters for article type and topic
         col3, col4 = st.columns(2)
+        col5, col6 = st.columns(2)
         with col3:
             user_type_input = st.selectbox(
                 f"Select article type",
@@ -798,6 +812,20 @@ elif navigation == 'Region (ALF)':
                 f"Filter for Topic containing:",
             )
             topic_filter = user_title_input if user_title_input else ""
+
+        with col5:
+            selected_major_area = st.selectbox("Select Major Area", major_areas)
+
+        with col6:
+            if selected_major_area == "All":
+                selected_specialty = st.selectbox("Select Specialty", ["All"])
+            else:
+                # Filter specialties based on selected major area
+                major_code = topic_codes_df[topic_codes_df['description'] == selected_major_area]['code'].values[0]
+                filtered_specialties = sorted(topic_codes_df[topic_codes_df['code'].str.startswith(major_code) & (topic_codes_df['code'].str.len() == 5)]['description'].unique())
+                filtered_specialties.insert(0, "All")
+                selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
+
     else:
         title_filter = ""
         type_filter = ""
@@ -816,9 +844,9 @@ elif navigation == 'Region (ALF)':
 
     # Fetch the data based on the search terms
     if search_text:
-        data1 = fetch_affiliations(search_text, type_filter, title_filter, fran_ar, till_ar)
+        data1 = fetch_affiliations(search_text, type_filter, topic_filter, major_area_code, specialty_code, fran_ar, till_ar)
         if search_text_2:
-            data2 = fetch_affiliations(search_text_2, type_filter, title_filter, fran_ar, till_ar)
+            data2 = fetch_affiliations(search_text_2, type_filter, topic_filter, major_area_code, specialty_code, fran_ar, till_ar)
         else:
             data2 = pd.DataFrame()
 
