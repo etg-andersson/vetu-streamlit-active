@@ -544,12 +544,11 @@ elif navigation == 'Akademi & Högskola':
     data = fetch_data(selected_university, selected_institute, selected_department, topic_filter, type_filter, fran_ar, till_ar)
 
     # Check if search 1 and search 2 are the same
-    if jamfor_box:
-        same_search = (
-            selected_university == selected_university_comp and
-            selected_institute == selected_institute_comp and
-            selected_department == selected_department_comp
-        )
+    same_search = (
+        selected_university == selected_university_comp and
+        selected_institute == selected_institute_comp and
+        selected_department == selected_department_comp
+    )
 
     # Helper function to create search description for legend
     def create_search_description(university, institute, department):
@@ -582,6 +581,13 @@ elif navigation == 'Akademi & Högskola':
                 tick0=fran_ar,
                 dtick=1,
                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.3,
+                xanchor="center",
+                x=0.5
             )
         )
         return fig
@@ -606,6 +612,13 @@ elif navigation == 'Akademi & Högskola':
                 tick0=fran_ar,
                 dtick=1,
                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.3,
+                xanchor="center",
+                x=0.5
             )
         )
         return fig
@@ -630,6 +643,13 @@ elif navigation == 'Akademi & Högskola':
                 tick0=fran_ar,
                 dtick=1,
                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.3,
+                xanchor="center",
+                x=0.5
             )
         )
         return fig
