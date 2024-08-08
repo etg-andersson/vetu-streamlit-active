@@ -165,7 +165,7 @@ if navigation == 'Översikt':
     # Get all the data
     def fetch_impact_citation_data():
             conn = create_conn()
-            citation_impact_query = "SELECT citations, year, impactful_citations FROM vetu_impact"
+            citation_impact_query = "SELECT citations, year, impactful_citations FROM vetu_paper"
             author_query = "SELECT name FROM vetu_author"
             
             citation_impact_df = pd.read_sql_query(citation_impact_query, conn)
