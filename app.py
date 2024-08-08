@@ -585,6 +585,7 @@ elif navigation == 'Akademi & Högskola':
                 dtick=1,
                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
             ),
+            legend_title_text='Affiliation',
             legend=dict(
                 orientation="h",
                 yanchor="top",
@@ -616,6 +617,7 @@ elif navigation == 'Akademi & Högskola':
                 dtick=1,
                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
             ),
+            legend_title_text='Affiliation',
             legend=dict(
                 orientation="h",
                 yanchor="top",
@@ -647,6 +649,7 @@ elif navigation == 'Akademi & Högskola':
                 dtick=1,
                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
             ),
+            legend_title_text='Affiliation',
             legend=dict(
                 orientation="h",
                 yanchor="top",
