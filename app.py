@@ -210,7 +210,7 @@ if navigation == 'Översikt':
         total_papers_cited_5_or_less = citation_df[citation_df['citation_category'].isin(['≤5 Citations'])].shape[0]
         percentage_papers_cited_5_or_less = round(total_papers_cited_5_or_less * 100 / total_papers, 2)
 
-        percentage_papers_cited_more_than_10 = 100 - total_papers_cited_10_or_less - total_papers_cited_5_or_less
+        percentage_papers_cited_more_than_10 = 100 - percentage_papers_cited_10_or_less - percentage_papers_cited_5_or_less
 
         # Display the info box
         st.markdown(f"""
