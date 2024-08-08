@@ -1012,8 +1012,11 @@ elif navigation == 'Region (ALF)':
     def fetch_affiliations(search_text, from_year, to_year):
         conditions = []
         
-        # Parse the search_text for multiple search queries separated by commas
-        search_queries = [query.strip() for query in search_text.split(',')]
+        # Remove commas from the input search text
+        search_text = search_text.replace(',', '')
+
+        # Parse the search_text for multiple search queries separated by semicolons
+        search_queries = [query.strip() for query in search_text.split(';')]
         
         query_conditions = []
         
@@ -1044,7 +1047,7 @@ elif navigation == 'Region (ALF)':
             GROUP BY year
             ORDER BY year;
         """
-        
+
         conn = create_conn()
         df = pd.read_sql(query, conn)
         conn.close()
@@ -1055,34 +1058,53 @@ elif navigation == 'Region (ALF)':
     st.header("Affiliation Search")
 
     # Create a text input for search terms
-    search_text = st.text_input("Enter search terms (use commas to separate multiple queries):")
+    search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
 
     # Create a year range slider
     year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
     fran_ar, till_ar = year_range
 
+    # Add a checkbox for comparison
+    compare = st.checkbox("Jämför")
+
+    # Conditional second search bar for comparison
+    if compare:
+        search_text_2 = st.text_input("Enter search terms for comparison (use semicolons to separate multiple queries):")
+    else:
+        search_text_2 = ""
+
     # Fetch the data based on the search terms
     if search_text:
-        data = fetch_affiliations(search_text, fran_ar, till_ar)
+        data1 = fetch_affiliations(search_text, fran_ar, till_ar)
+        if search_text_2:
+            data2 = fetch_affiliations(search_text_2, fran_ar, till_ar)
+        else:
+            data2 = pd.DataFrame()
 
         # Function to create the bar chart
-        def create_affiliations_chart(data, title):
-            fig = px.bar(data, x='year', y='publication_count', title=title,
-                        labels={'year': 'Year', 'publication_count': 'Number of Publications'})
+        def create_affiliations_chart(data1, data2, title):
+            data1['Search'] = 'Search 1'
+            if not data2.empty:
+                data2['Search'] = 'Search 2'
+                combined_data = pd.concat([data1, data2])
+            else:
+                combined_data = data1
+
+            fig = px.bar(combined_data, x='year', y='publication_count', color='Search', barmode='group',
+                        title=title, labels={'year': 'Year', 'publication_count': 'Number of Publications', 'Search': 'Search Query'})
             fig.update_layout(
                 xaxis=dict(
                     tickmode='linear',
                     tick0=fran_ar,
                     dtick=1,
                     range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
-                ),
-                barmode='stack'
+                )
             )
             return fig
 
         # Display the chart
-        if not data.empty:
-            fig = create_affiliations_chart(data, 'Publications Over Time')
+        if not data1.empty:
+            fig = create_affiliations_chart(data1, data2, 'Publications Over Time')
             st.plotly_chart(fig)
             
             # Add a download button for the chart
@@ -1097,6 +1119,8 @@ elif navigation == 'Region (ALF)':
             )
         else:
             st.write("No data available for the given search terms and year range.")
+    else:
+        st.write("Enter search terms to filter the affiliations.")
 
 
 elif navigation == 'Sök Artiklar':
