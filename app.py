@@ -1020,11 +1020,11 @@ elif navigation == 'Region (ALF)':
             if '"' in query:
                 exact_phrases = [phrase.strip('"') for phrase in query.split('"') if phrase]
                 for phrase in exact_phrases:
-                    conditions.append(f"affiliations LIKE '%{phrase}%'")
+                    conditions.append(f"affiliations ILIKE '%{phrase}%'")
             else:
                 # Split the query by spaces for unordered search terms
                 terms = query.split()
-                term_conditions = [f"affiliations LIKE '%{term}%'" for term in terms]
+                term_conditions = [f"affiliations ILIKE '%{term}%'" for term in terms]
                 conditions.append(f"({' AND '.join(term_conditions)})")
 
         conditions.append(f"year >= {from_year}")
