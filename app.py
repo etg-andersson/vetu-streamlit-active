@@ -710,6 +710,7 @@ elif navigation == 'Akademi & Högskola':
         st.write("No data available for the given search terms and year range.")
 
 elif navigation == 'Region (ALF)':
+    # Function to fetch data from the database based on filters
     def fetch_affiliations(search_text, type_filter, topic_filter, from_year, to_year):
         conditions = []
         
@@ -762,7 +763,7 @@ elif navigation == 'Region (ALF)':
         conn.close()
         
         return df
-    
+
     # Create a Streamlit page for affiliation search
     st.subheader("Affiliation Search")
 
@@ -771,12 +772,12 @@ elif navigation == 'Region (ALF)':
         # Create a year range slider
         year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
         fran_ar, till_ar = year_range
-    
+
     with col2: 
         st.write("")
         st.write("")
         additional_filters = st.checkbox("Lägg till fler filter")
-    
+
     if additional_filters:
         # Additional filters for article type and topic
         col3, col4 = st.columns(2)
@@ -812,7 +813,7 @@ elif navigation == 'Region (ALF)':
     if search_text:
         data1 = fetch_affiliations(search_text, type_filter, topic_filter, fran_ar, till_ar)
         if search_text_2:
-            data2 = fetch_affiliations(search_text, type_filter, topic_filter, fran_ar, till_ar)
+            data2 = fetch_affiliations(search_text_2, type_filter, topic_filter, fran_ar, till_ar)
         else:
             data2 = pd.DataFrame()
 
