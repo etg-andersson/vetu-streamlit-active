@@ -773,6 +773,8 @@ elif navigation == 'Region (ALF)':
         fran_ar, till_ar = year_range
     
     with col2: 
+        st.write("")
+        st.write("")
         additional_filters = st.checkbox("Lägg till fler filter")
     
     if additional_filters:
