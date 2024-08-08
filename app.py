@@ -811,7 +811,7 @@ elif navigation == 'Region (ALF)':
 
         with col4:
             user_title_input = st.text_input(
-                f"Filter for Topic containing:",
+                f"Filter for Title containing:",
             )
             title_filter = user_title_input if user_title_input else ""
 
@@ -880,7 +880,9 @@ elif navigation == 'Region (ALF)':
                     dtick=1,
                     range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
                 ),
-                legend_title_text='Affiliation'
+                legend_title_text='Affiliation',
+            bargap=0.15,  # Adjust the gap between bars within a group
+            bargroupgap=0.05  # Adjust the gap between groups of bars
             )
             return fig
 
