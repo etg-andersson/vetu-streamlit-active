@@ -1015,17 +1015,22 @@ elif navigation == 'Region (ALF)':
         # Parse the search_text for multiple search queries separated by commas
         search_queries = [query.strip() for query in search_text.split(',')]
         
+        query_conditions = []
+        
         for query in search_queries:
             # Check if the query is within quotes for exact order
             if '"' in query:
                 exact_phrases = [phrase.strip('"') for phrase in query.split('"') if phrase]
                 for phrase in exact_phrases:
-                    conditions.append(f"affiliations ILIKE '%{phrase}%'")
+                    query_conditions.append(f"affiliations ILIKE '%{phrase}%'")
             else:
                 # Split the query by spaces for unordered search terms
                 terms = query.split()
                 term_conditions = [f"affiliations ILIKE '%{term}%'" for term in terms]
-                conditions.append(f"({' AND '.join(term_conditions)})")
+                query_conditions.append(f"({' AND '.join(term_conditions)})")
+
+        # Combine all query conditions with OR
+        conditions.append(f"({' OR '.join(query_conditions)})")
 
         conditions.append(f"year >= {from_year}")
         conditions.append(f"year <= {to_year}")
