@@ -134,7 +134,7 @@ universities2 = pd.read_csv(file_path_university2)
 universities2['Code'] = universities2['Code'].astype(str)
 
 #Import topic codes indexing
-topic_codes_df = pd.read_csv(file_path_topic_codes)
+topic_codes_df = pd.read_csv(file_path_topic_codes, sep=';')
 # Extract unique major areas and specialties
 major_areas = sorted(topic_codes_df[topic_codes_df['code'].str.len() == 3]['description'].unique())
 specialties = sorted(topic_codes_df[topic_codes_df['code'].str.len() == 5]['description'].unique())
