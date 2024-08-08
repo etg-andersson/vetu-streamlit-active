@@ -710,7 +710,7 @@ elif navigation == 'Akademi & Högskola':
         st.write("No data available for the given search terms and year range.")
 
 elif navigation == 'Region (ALF)':
-    def fetch_affiliations(search_text, from_year, to_year):
+    def fetch_affiliations(search_text, type_filter, topic_filter, from_year, to_year):
         conditions = []
         
         # Remove commas from the input search text
@@ -736,6 +736,14 @@ elif navigation == 'Region (ALF)':
         # Combine all query conditions with OR
         conditions.append(f"({' OR '.join(query_conditions)})")
 
+        if type_filter:
+            conditions.append(f"publication_type ILIKE '%{type_filter}%'")
+        
+        if topic_filter:
+            topics = topic_filter.split(',')
+            topic_conditions = [f"title ILIKE '%{topic.strip()}%'" for topic in topics]
+            conditions.append(f"({' OR '.join(topic_conditions)})")
+        
         conditions.append(f"year >= {from_year}")
         conditions.append(f"year <= {to_year}")
         
@@ -748,7 +756,7 @@ elif navigation == 'Region (ALF)':
             GROUP BY year
             ORDER BY year;
         """
-
+        
         conn = create_conn()
         df = pd.read_sql(query, conn)
         conn.close()
@@ -761,6 +769,21 @@ elif navigation == 'Region (ALF)':
     # Create a year range slider
     year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
     fran_ar, till_ar = year_range
+
+    # Additional filters for article type and topic
+    col1, col2 = st.columns(2)
+    with col1:
+        user_type_input = st.selectbox(
+            f"Select article type",
+            options=["All", "Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
+        )
+        type_filter = "" if user_type_input == "All" else user_type_input
+
+    with col2:
+        user_text_input = st.text_input(
+            f"Filter for Topic containing:",
+        )
+        topic_filter = user_text_input if user_text_input else ""
 
     # Create a text input for search terms
     search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
@@ -776,9 +799,9 @@ elif navigation == 'Region (ALF)':
 
     # Fetch the data based on the search terms
     if search_text:
-        data1 = fetch_affiliations(search_text, fran_ar, till_ar)
+        data1 = fetch_affiliations(search_text, type_filter, topic_filter, fran_ar, till_ar)
         if search_text_2:
-            data2 = fetch_affiliations(search_text_2, fran_ar, till_ar)
+            data2 = fetch_affiliations(search_text, type_filter, topic_filter, fran_ar, till_ar)
         else:
             data2 = pd.DataFrame()
 
