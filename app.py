@@ -136,8 +136,8 @@ universities2['Code'] = universities2['Code'].astype(str)
 #Import topic codes indexing
 topic_codes_df = pd.read_csv(file_path_topic_codes, sep=';')
 # Extract unique major areas and specialties
-major_areas = sorted(topic_codes_df[topic_codes_df['code'].str.len() == 3]['description'].unique())
-specialties = sorted(topic_codes_df[topic_codes_df['code'].str.len() == 5]['description'].unique())
+major_areas = sorted(topic_codes_df[topic_codes_df['Code'].str.len() == 3]['Swedish'].unique())
+specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.len() == 5]['Swedish'].unique())
 
 # Add "All" option to the dropdowns
 major_areas.insert(0, "All")
@@ -821,8 +821,8 @@ elif navigation == 'Region (ALF)':
                 selected_specialty = st.selectbox("Select Specialty", ["All"])
             else:
                 # Filter specialties based on selected major area
-                major_code = topic_codes_df[topic_codes_df['description'] == selected_major_area]['code'].values[0]
-                filtered_specialties = sorted(topic_codes_df[topic_codes_df['code'].str.startswith(major_code) & (topic_codes_df['code'].str.len() == 5)]['description'].unique())
+                major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
+                filtered_specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.startswith(major_code) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
                 filtered_specialties.insert(0, "All")
                 selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
 
