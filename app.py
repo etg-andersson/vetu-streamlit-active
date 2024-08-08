@@ -709,8 +709,192 @@ elif navigation == 'Akademi & Högskola':
     else:
         st.write("No data available for the given search terms and year range.")
 
-elif navigation == 'Finansiärer':
-    st.write('Funktionen kommer snart')
+elif navigation == 'Region (ALF)':
+    def fetch_affiliations(search_text, from_year, to_year):
+        conditions = []
+        
+        # Remove commas from the input search text
+        search_text = search_text.replace(',', '')
+
+        # Parse the search_text for multiple search queries separated by semicolons
+        search_queries = [query.strip() for query in search_text.split(';')]
+        
+        query_conditions = []
+        
+        for query in search_queries:
+            # Check if the query is within quotes for exact order
+            if '"' in query:
+                exact_phrases = [phrase.strip('"') for phrase in query.split('"') if phrase]
+                for phrase in exact_phrases:
+                    query_conditions.append(f"affiliations ILIKE '%{phrase}%'")
+            else:
+                # Split the query by spaces for unordered search terms
+                terms = query.split()
+                term_conditions = [f"affiliations ILIKE '%{term}%'" for term in terms]
+                query_conditions.append(f"({' AND '.join(term_conditions)})")
+
+        # Combine all query conditions with OR
+        conditions.append(f"({' OR '.join(query_conditions)})")
+
+        conditions.append(f"year >= {from_year}")
+        conditions.append(f"year <= {to_year}")
+        
+        where_clause = " AND ".join(conditions)
+
+        query = f"""
+            SELECT year, COUNT(*) as publication_count, SUM(citations) as total_citations, AVG(citations) as avg_citations_per_paper
+            FROM vetu_paper
+            WHERE {where_clause}
+            GROUP BY year
+            ORDER BY year;
+        """
+
+        conn = create_conn()
+        df = pd.read_sql(query, conn)
+        conn.close()
+        
+        return df
+    
+    # Create a Streamlit page for affiliation search
+    st.subheader("Affiliation Search")
+
+    # Create a year range slider
+    year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
+    fran_ar, till_ar = year_range
+
+    # Create a text input for search terms
+    search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
+
+    # Add a checkbox for comparison
+    compare = st.checkbox("Jämför")
+
+    # Conditional second search bar for comparison
+    if compare:
+        search_text_2 = st.text_input("Enter search terms for comparison (use semicolons to separate multiple queries):")
+    else:
+        search_text_2 = ""
+
+    # Fetch the data based on the search terms
+    if search_text:
+        data1 = fetch_affiliations(search_text, fran_ar, till_ar)
+        if search_text_2:
+            data2 = fetch_affiliations(search_text_2, fran_ar, till_ar)
+        else:
+            data2 = pd.DataFrame()
+
+        # Function to create the bar chart for publication count
+        def create_publications_chart(data1, data2, title):
+            data1['Search'] = 'Search 1'
+            if not data2.empty:
+                data2['Search'] = 'Search 2'
+                combined_data = pd.concat([data1, data2])
+            else:
+                combined_data = data1
+
+            fig = px.bar(combined_data, x='year', y='publication_count', color='Search', barmode='group',
+                        title=title, labels={'year': 'Year', 'publication_count': 'Number of Publications', 'Search': 'Search Query'})
+            fig.update_layout(
+                xaxis=dict(
+                    tickmode='linear',
+                    tick0=fran_ar,
+                    dtick=1,
+                    range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+                ),
+                legend_title_text='Affiliation'
+            )
+            return fig
+
+        # Function to create the bar chart for total citations
+        def create_citations_chart(data1, data2, title):
+            data1['Search'] = 'Search 1'
+            if not data2.empty:
+                data2['Search'] = 'Search 2'
+                combined_data = pd.concat([data1, data2])
+            else:
+                combined_data = data1
+
+            fig = px.bar(combined_data, x='year', y='total_citations', color='Search', barmode='group',
+                        title=title, labels={'year': 'Year', 'total_citations': 'Total Citations', 'Search': 'Search Query'})
+            fig.update_layout(
+                xaxis=dict(
+                    tickmode='linear',
+                    tick0=fran_ar,
+                    dtick=1,
+                    range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+                ),
+                legend_title_text='Affiliation'
+            )
+            return fig
+
+        # Function to create the bar chart for average citations per paper
+        def create_avg_citations_chart(data1, data2, title):
+            data1['Search'] = 'Search 1'
+            if not data2.empty:
+                data2['Search'] = 'Search 2'
+                combined_data = pd.concat([data1, data2])
+            else:
+                combined_data = data1
+
+            fig = px.bar(combined_data, x='year', y='avg_citations_per_paper', color='Search', barmode='group',
+                        title=title, labels={'year': 'Year', 'avg_citations_per_paper': 'Average Citations per Paper', 'Search': 'Search Query'})
+            fig.update_layout(
+                xaxis=dict(
+                    tickmode='linear',
+                    tick0=fran_ar,
+                    dtick=1,
+                    range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+                ),
+                legend_title_text='Affiliation'
+            )
+            return fig
+
+        # Display the publication count chart
+        if not data1.empty:
+            fig1 = create_publications_chart(data1, data2, 'Publications Over Time')
+            st.plotly_chart(fig1)
+            
+            # Display the total citations chart
+            fig2 = create_citations_chart(data1, data2, 'Total Citations Over Time')
+            st.plotly_chart(fig2)
+
+            # Display the average citations per paper chart
+            fig3 = create_avg_citations_chart(data1, data2, 'Average Citations per Paper Over Time')
+            st.plotly_chart(fig3)
+            
+            # Add download buttons for the charts
+            pdf_buffer1 = io.BytesIO()
+            fig1.write_image(pdf_buffer1, format='pdf')
+            pdf_buffer1.seek(0)
+            st.download_button(
+                label="Download publications chart as PDF",
+                data=pdf_buffer1,
+                file_name="publications_chart.pdf",
+                mime="application/pdf"
+            )
+            
+            pdf_buffer2 = io.BytesIO()
+            fig2.write_image(pdf_buffer2, format='pdf')
+            pdf_buffer2.seek(0)
+            st.download_button(
+                label="Download total citations chart as PDF",
+                data=pdf_buffer2,
+                file_name="citations_chart.pdf",
+                mime="application/pdf"
+            )
+
+            pdf_buffer3 = io.BytesIO()
+            fig3.write_image(pdf_buffer3, format='pdf')
+            pdf_buffer3.seek(0)
+            st.download_button(
+                label="Download average citations per paper chart as PDF",
+                data=pdf_buffer3,
+                file_name="avg_citations_chart.pdf",
+                mime="application/pdf"
+            )
+        else:
+            st.write("No data available for the given search terms and year range.")
+    else:
+        st.write("Enter search terms to filter the affiliations.")
 
 elif navigation == 'Tidsskrifter':
 
@@ -1083,194 +1267,11 @@ elif navigation == 'Forskare':
     st.write('  ')
     st.write('  ')
   
+elif navigation == 'Finansiärer':
+    st.write('Funktionen kommer snart')
 
 elif navigation == 'Innovation':
     st.write('Funktionen kommer snart')
-
-elif navigation == 'Region (ALF)':
-    def fetch_affiliations(search_text, from_year, to_year):
-        conditions = []
-        
-        # Remove commas from the input search text
-        search_text = search_text.replace(',', '')
-
-        # Parse the search_text for multiple search queries separated by semicolons
-        search_queries = [query.strip() for query in search_text.split(';')]
-        
-        query_conditions = []
-        
-        for query in search_queries:
-            # Check if the query is within quotes for exact order
-            if '"' in query:
-                exact_phrases = [phrase.strip('"') for phrase in query.split('"') if phrase]
-                for phrase in exact_phrases:
-                    query_conditions.append(f"affiliations ILIKE '%{phrase}%'")
-            else:
-                # Split the query by spaces for unordered search terms
-                terms = query.split()
-                term_conditions = [f"affiliations ILIKE '%{term}%'" for term in terms]
-                query_conditions.append(f"({' AND '.join(term_conditions)})")
-
-        # Combine all query conditions with OR
-        conditions.append(f"({' OR '.join(query_conditions)})")
-
-        conditions.append(f"year >= {from_year}")
-        conditions.append(f"year <= {to_year}")
-        
-        where_clause = " AND ".join(conditions)
-
-        query = f"""
-            SELECT year, COUNT(*) as publication_count, SUM(citations) as total_citations, AVG(citations) as avg_citations_per_paper
-            FROM vetu_paper
-            WHERE {where_clause}
-            GROUP BY year
-            ORDER BY year;
-        """
-
-        conn = create_conn()
-        df = pd.read_sql(query, conn)
-        conn.close()
-        
-        return df
-    
-    # Create a Streamlit page for affiliation search
-    st.subheader("Affiliation Search")
-
-    # Create a year range slider
-    year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
-    fran_ar, till_ar = year_range
-
-    # Create a text input for search terms
-    search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
-
-    # Add a checkbox for comparison
-    compare = st.checkbox("Jämför")
-
-    # Conditional second search bar for comparison
-    if compare:
-        search_text_2 = st.text_input("Enter search terms for comparison (use semicolons to separate multiple queries):")
-    else:
-        search_text_2 = ""
-
-    # Fetch the data based on the search terms
-    if search_text:
-        data1 = fetch_affiliations(search_text, fran_ar, till_ar)
-        if search_text_2:
-            data2 = fetch_affiliations(search_text_2, fran_ar, till_ar)
-        else:
-            data2 = pd.DataFrame()
-
-        # Function to create the bar chart for publication count
-        def create_publications_chart(data1, data2, title):
-            data1['Search'] = 'Search 1'
-            if not data2.empty:
-                data2['Search'] = 'Search 2'
-                combined_data = pd.concat([data1, data2])
-            else:
-                combined_data = data1
-
-            fig = px.bar(combined_data, x='year', y='publication_count', color='Search', barmode='group',
-                        title=title, labels={'year': 'Year', 'publication_count': 'Number of Publications', 'Search': 'Search Query'})
-            fig.update_layout(
-                xaxis=dict(
-                    tickmode='linear',
-                    tick0=fran_ar,
-                    dtick=1,
-                    range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
-                )
-            )
-            return fig
-
-        # Function to create the bar chart for total citations
-        def create_citations_chart(data1, data2, title):
-            data1['Search'] = 'Search 1'
-            if not data2.empty:
-                data2['Search'] = 'Search 2'
-                combined_data = pd.concat([data1, data2])
-            else:
-                combined_data = data1
-
-            fig = px.bar(combined_data, x='year', y='total_citations', color='Search', barmode='group',
-                        title=title, labels={'year': 'Year', 'total_citations': 'Total Citations', 'Search': 'Search Query'})
-            fig.update_layout(
-                xaxis=dict(
-                    tickmode='linear',
-                    tick0=fran_ar,
-                    dtick=1,
-                    range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
-                )
-            )
-            return fig
-
-        # Function to create the bar chart for average citations per paper
-        def create_avg_citations_chart(data1, data2, title):
-            data1['Search'] = 'Search 1'
-            if not data2.empty:
-                data2['Search'] = 'Search 2'
-                combined_data = pd.concat([data1, data2])
-            else:
-                combined_data = data1
-
-            fig = px.bar(combined_data, x='year', y='avg_citations_per_paper', color='Search', barmode='group',
-                        title=title, labels={'year': 'Year', 'avg_citations_per_paper': 'Average Citations per Paper', 'Search': 'Search Query'})
-            fig.update_layout(
-                xaxis=dict(
-                    tickmode='linear',
-                    tick0=fran_ar,
-                    dtick=1,
-                    range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
-                )
-            )
-            return fig
-
-        # Display the publication count chart
-        if not data1.empty:
-            fig1 = create_publications_chart(data1, data2, 'Publications Over Time')
-            st.plotly_chart(fig1)
-            
-            # Display the total citations chart
-            fig2 = create_citations_chart(data1, data2, 'Total Citations Over Time')
-            st.plotly_chart(fig2)
-
-            # Display the average citations per paper chart
-            fig3 = create_avg_citations_chart(data1, data2, 'Average Citations per Paper Over Time')
-            st.plotly_chart(fig3)
-            
-            # Add download buttons for the charts
-            pdf_buffer1 = io.BytesIO()
-            fig1.write_image(pdf_buffer1, format='pdf')
-            pdf_buffer1.seek(0)
-            st.download_button(
-                label="Download publications chart as PDF",
-                data=pdf_buffer1,
-                file_name="publications_chart.pdf",
-                mime="application/pdf"
-            )
-            
-            pdf_buffer2 = io.BytesIO()
-            fig2.write_image(pdf_buffer2, format='pdf')
-            pdf_buffer2.seek(0)
-            st.download_button(
-                label="Download total citations chart as PDF",
-                data=pdf_buffer2,
-                file_name="citations_chart.pdf",
-                mime="application/pdf"
-            )
-
-            pdf_buffer3 = io.BytesIO()
-            fig3.write_image(pdf_buffer3, format='pdf')
-            pdf_buffer3.seek(0)
-            st.download_button(
-                label="Download average citations per paper chart as PDF",
-                data=pdf_buffer3,
-                file_name="avg_citations_chart.pdf",
-                mime="application/pdf"
-            )
-        else:
-            st.write("No data available for the given search terms and year range.")
-    else:
-        st.write("Enter search terms to filter the affiliations.")
-
 
 elif navigation == 'Sök Artiklar':
 
