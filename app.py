@@ -704,29 +704,22 @@ elif navigation == 'Akademi & Högskola':
         return fig
 
     # Display the publication count chart
-    if not data.empty:
-        if data2.empty:
-            st.write("No data available for second selection.")
-        fig1 = create_publications_chart(data, data2, 'Publications Over Time')
-        st.plotly_chart(fig1)
-    
-    elif not data2.empty:
-        st.write("No data available for first selection.")
-        fig1 = create_publications_chart(data, data2, 'Publications Over Time')
-        st.plotly_chart(fig1)
+    if not data.empty or not data2.empty:
+        if data.empty:
+            st.write("No data available for the first selection.")
+        elif data2.empty:
+            if jamfor_box:
+                st.write("No data available for second selection.")
+            else:
+                pass
 
-    # Display the total citations chart
-    if not data.empty:
+        fig1 = create_publications_chart(data, data2, 'Publications Over Time')
+        st.plotly_chart(fig1)
         fig2 = create_citations_chart(data, data2, 'Total Citations Over Time')
         st.plotly_chart(fig2)
-
-    # Display the average citations per paper chart
-    if not data.empty:
         fig3 = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time')
         st.plotly_chart(fig3)
 
-    # Add download buttons for the charts
-    if not data.empty:
         pdf_buffer1 = io.BytesIO()
         fig1.write_image(pdf_buffer1, format='pdf')
         pdf_buffer1.seek(0)
@@ -757,7 +750,7 @@ elif navigation == 'Akademi & Högskola':
             mime="application/pdf"
         )
     else:
-        st.write("No data available for the given search terms and year range.")
+        st.write("No data available for the given filters and year range.")
 
 elif navigation == 'Region (ALF)':
     def fetch_affiliations(search_text, type_filter, topic_filter, major_code, specialty_code, from_year, to_year):
@@ -1183,7 +1176,7 @@ elif navigation == 'Tidsskrifter':
 
                     # Add a button to download the figure as a PDF
                     st.download_button(
-                        label="Download Total Papers Published in Journals as PDF",
+                        label="Download Total Papers Published in Each Journal as PDF",
                         data=pdf_buffer,
                         file_name="vetu_figure.pdf",
                         mime="application/pdf",
