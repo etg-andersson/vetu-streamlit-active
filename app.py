@@ -175,7 +175,112 @@ st.write('---')
 
 if navigation == 'Översikt':
 
-    import overview
+    from overview import fetch_overview_data
+    from overview import fetch_papers_per_year
+    from overview import bar_plot_total_papers_per_year
+    from overview import calculate_percentage_composition_citations
+    from overview import bar_plot_citation_composition
+    from overview import bar_plot_total_citations
+    
+    # Create two columns for the layout
+    col1, col2 = st.columns(2)
+
+    # Column 1: Impact Summary
+    with col1:
+
+        total_citations, total_papers, total_authors, percentage_papers_cited_more_than_10, percentage_papers_cited_6_through_10, percentage_papers_cited_5_or_less, citation_df, impact_df = fetch_overview_data()
+
+        # Display the info box
+        st.markdown(f"""
+        <div style="background-color: #d9d9d9; padding: 20px; border-radius: 15px;">
+            <h3 style="color: #333;">Impact Summary</h3>
+            <p><strong>Total Citations:</strong> {total_citations}</p>
+            <p><strong>Total Number of Papers:</strong> {total_papers}</p>
+            <p><strong>Total Number of Authors:</strong> {total_authors}</p>
+            <p><strong>Percentage of Papers with >10 citations:</strong> {percentage_papers_cited_more_than_10}%</p>
+            <p><strong>Percentage of Papers with 6-10 citations:</strong> {percentage_papers_cited_6_through_10}%</p>
+            <p><strong>Percentage of Papers with ≤5 citations:</strong> {percentage_papers_cited_5_or_less}%</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Add a separator
+        st.write('---')
+
+    # Column 2: Papers Published Each Year
+    with col2:
+
+        papers_per_year = fetch_papers_per_year()
+
+        overview_total_papers_per_year = bar_plot_total_papers_per_year(papers_per_year)
+
+        # Display the plot in Streamlit
+        st.plotly_chart(overview_total_papers_per_year)
+
+        # Check if 'fig' is defined and is an instance of a Plotly figure
+        if overview_total_papers_per_year is not None:
+            # Save the figure to a PDF buffer
+            pdf_buffer = io.BytesIO()
+            overview_total_papers_per_year.write_image(pdf_buffer, format='pdf')
+
+            # Reset the buffer position to the beginning
+            pdf_buffer.seek(0)
+
+            # Add a button to download the figure as a PDF
+            st.download_button(
+                label="Download as PDF",
+                data=pdf_buffer,
+                file_name="vetu_figure.pdf",
+                mime="application/pdf",
+                key="overview_total_papers_per_year"
+            )
+
+    pivot_df = calculate_percentage_composition_citations(citation_df)
+
+    overview_citation_composition = bar_plot_citation_composition(pivot_df)
+
+    # Display the plot in Streamlit
+    st.plotly_chart(overview_citation_composition)
+
+    # Check if 'fig' is defined and is an instance of a Plotly figure
+    if overview_citation_composition is not None:
+        # Save the figure to a PDF buffer
+        pdf_buffer = io.BytesIO()
+        overview_citation_composition.write_image(pdf_buffer, format='pdf')
+
+        # Reset the buffer position to the beginning
+        pdf_buffer.seek(0)
+
+        # Add a button to download the figure as a PDF
+        st.download_button(
+            label="Download as PDF",
+            data=pdf_buffer,
+            file_name="vetu_figure.pdf",
+            mime="application/pdf",
+            key="overview_citation_composition"
+        )
+
+    overview_total_citations= bar_plot_total_citations(impact_df)
+
+    # Display the plot in Streamlit
+    st.plotly_chart(overview_total_citations)
+
+    # Check if 'fig' is defined and is an instance of a Plotly figure
+    if overview_total_citations is not None:
+        # Save the figure to a PDF buffer
+        pdf_buffer = io.BytesIO()
+        overview_total_citations.write_image(pdf_buffer, format='pdf')
+
+        # Reset the buffer position to the beginning
+        pdf_buffer.seek(0)
+
+        # Add a button to download the figure as a PDF
+        st.download_button(
+            label="Download as PDF",
+            data=pdf_buffer,
+            file_name="vetu_figure.pdf",
+            mime="application/pdf",
+            key="overview_total_citations"
+        )
 
 
 elif navigation == 'Akademi & Högskola':
