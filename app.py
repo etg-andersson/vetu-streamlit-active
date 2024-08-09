@@ -1416,15 +1416,16 @@ elif navigation == 'Sök Artiklar':
             to_filter_columns = st.multiselect("Filter articles based on", ["Type of paper", "Title", "Topic", "Journal", "Affiliation"])
             
             for column in to_filter_columns:
+                left, right = st.columns((1, 20))
                 if column == "Type of paper":
-                    user_type_input = st.multiselect(
+                    user_type_input = right.multiselect(
                         f"Select {column}",
                         options=["Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
                     )
                     if user_type_input:
                         filters[column] = user_type_input
                 else:
-                    user_text_input = st.text_input(
+                    user_text_input = right.text_input(
                         f"Filter for {column} containing:",
                     )
                     if user_text_input:
