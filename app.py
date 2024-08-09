@@ -1432,13 +1432,13 @@ elif navigation == 'Sök Artiklar':
                     selected_major_area = right.selectbox("Select Major Area", major_areas)
 
                     if selected_major_area != "All":
-                        major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
+                        major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code']
                         filters["Topic"] = major_code
                         filtered_specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.startswith(major_code)) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
                         filtered_specialties.insert(0, "All")
 
                         selected_specialty = right.selectbox("Select Specialty", filtered_specialties)
-                        specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
+                        specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code']
                         filters["Specialty"] = specialty_code
                 else:
                     user_text_input = right.text_input(
