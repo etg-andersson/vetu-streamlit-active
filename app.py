@@ -1428,20 +1428,18 @@ elif navigation == 'Sök Artiklar':
                     if user_type_input:
                         filters[column] = user_type_input
                 elif column == "Topic":
-                    # Major Area and Specialty Dropdowns
-                    # major_areas = sorted(topic_codes_df[topic_codes_df['Code'].str.len() == 3]['Swedish'].unique())
-                    # major_areas.insert(0, "All")
 
                     selected_major_area = right.selectbox("Select Major Area", major_areas)
-                    filters[column] = selected_major_area
 
                     if selected_major_area != "All":
                         major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
+                        filters["Topic"] = major_code
                         filtered_specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.startswith(major_code)) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
                         filtered_specialties.insert(0, "All")
 
                         selected_specialty = right.selectbox("Select Specialty", filtered_specialties)
-                        filters["Specialty"] = selected_specialty
+                        specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
+                        filters["Specialty"] = specialty_code
                 else:
                     user_text_input = right.text_input(
                         f"Filter for {column} containing:",
