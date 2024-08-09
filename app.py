@@ -705,6 +705,13 @@ elif navigation == 'Akademi & Högskola':
 
     # Display the publication count chart
     if not data.empty:
+        if data2.empty:
+            st.write("No data available for second selection.")
+        fig1 = create_publications_chart(data, data2, 'Publications Over Time')
+        st.plotly_chart(fig1)
+    
+    elif not data2.empty:
+        st.write("No data available for first selection.")
         fig1 = create_publications_chart(data, data2, 'Publications Over Time')
         st.plotly_chart(fig1)
 
@@ -1157,8 +1164,8 @@ elif navigation == 'Tidsskrifter':
             # Example plot (optional)
             if not top_journals.empty:
                 fig1 = px.bar(top_journals, x='Truncated Journal', y='Total Papers', title='Total Papers Published in Each Journal',
-                            labels={'Journal': 'Journal', 'Total Papers': 'Number of Papers'})
-                fig1.update_layout(width=2000, height=600)
+                            labels={'Journal': 'Journal', 'Total Papers': 'Number of Papers'}, horizontal=True)
+                fig1.update_layout(width=2000, height=800)
                 st.plotly_chart(fig1)
                 st.write('---')
 
