@@ -1429,8 +1429,8 @@ elif navigation == 'Sök Artiklar':
                         filters[column] = user_type_input
                 elif column == "Topic":
                     # Major Area and Specialty Dropdowns
-                    major_areas = sorted(topic_codes_df[topic_codes_df['Code'].str.len() == 3]['Swedish'].unique())
-                    major_areas.insert(0, "All")
+                    # major_areas = sorted(topic_codes_df[topic_codes_df['Code'].str.len() == 3]['Swedish'].unique())
+                    # major_areas.insert(0, "All")
 
                     selected_major_area = right.selectbox("Select Major Area", major_areas)
                     filters[column] = selected_major_area
@@ -1450,12 +1450,6 @@ elif navigation == 'Sök Artiklar':
                         filters[column] = user_text_input
         
         return filters
-
-    # Main Streamlit app
-    st.header("Author Paper Search")
-
-    # Load the topic codes CSV file (replace 'path_to_your_topic_codes.csv' with the actual path)
-    topic_codes_df = pd.read_csv('path_to_your_topic_codes.csv')
 
     # Filter parameters
     filters = filter_dataframe()
