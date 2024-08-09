@@ -691,8 +691,18 @@ elif navigation == 'Akademi & Högskola':
         )
         return fig
 
+    # Initialize session state for figures
+    if 'fig1' not in st.session_state:
+        st.session_state['fig1'] = None
+    if 'fig2' not in st.session_state:
+        st.session_state['fig2'] = None
+    if 'fig3' not in st.session_state:
+        st.session_state['fig3'] = None
+
+    # Define search button
     search_button = st.button("Search")
 
+    # Check if the search button was pressed
     if search_button:
         # Fetch the data
         data = fetch_data(selected_university, selected_institute, selected_department, title_filter, type_filter, fran_ar, till_ar)
@@ -714,23 +724,25 @@ elif navigation == 'Akademi & Högskola':
                 else:
                     pass
 
-            fig1 = create_publications_chart(data, data2, 'Publications Over Time')
-            fig2 = create_citations_chart(data, data2, 'Total Citations Over Time')
-            fig3 = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time')
+            st.session_state['fig1'] = create_publications_chart(data, data2, 'Publications Over Time')
+            st.session_state['fig2'] = create_citations_chart(data, data2, 'Total Citations Over Time')
+            st.session_state['fig3'] = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time')
             
         else:
-            fig1 = None
-            fig2 = None
-            fig3 = None
+            st.session_state['fig1'] = None
+            st.session_state['fig2'] = None
+            st.session_state['fig3'] = None
             st.write("No data available for the given filters and year range.")
-    
-    if not data.empty or not data2.empty:
-        st.plotly_chart(fig1)
-        st.plotly_chart(fig2)
-        st.plotly_chart(fig3)
 
+    # Display the charts if they exist
+    if st.session_state['fig1'] is not None:
+        st.plotly_chart(st.session_state['fig1'])
+        st.plotly_chart(st.session_state['fig2'])
+        st.plotly_chart(st.session_state['fig3'])
+
+        # Add download buttons
         pdf_buffer1 = io.BytesIO()
-        fig1.write_image(pdf_buffer1, format='pdf')
+        st.session_state['fig1'].write_image(pdf_buffer1, format='pdf')
         pdf_buffer1.seek(0)
         st.download_button(
             label="Download publications chart as PDF",
@@ -740,7 +752,7 @@ elif navigation == 'Akademi & Högskola':
         )
         
         pdf_buffer2 = io.BytesIO()
-        fig2.write_image(pdf_buffer2, format='pdf')
+        st.session_state['fig2'].write_image(pdf_buffer2, format='pdf')
         pdf_buffer2.seek(0)
         st.download_button(
             label="Download total citations chart as PDF",
@@ -750,7 +762,7 @@ elif navigation == 'Akademi & Högskola':
         )
 
         pdf_buffer3 = io.BytesIO()
-        fig3.write_image(pdf_buffer3, format='pdf')
+        st.session_state['fig3'].write_image(pdf_buffer3, format='pdf')
         pdf_buffer3.seek(0)
         st.download_button(
             label="Download average citations per paper chart as PDF",
