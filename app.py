@@ -1381,7 +1381,10 @@ elif navigation == 'Sök Artiklar':
             conditions.append(f"title ILIKE '%{filters['Title']}%'")
         
         if filters.get("Topic"):
-            conditions.append(f"abstract_text ILIKE '%{filters['Topic']}%'")
+            if filters.get("Specialty") and filters['Specialty'] != "All":
+                conditions.append(f"topic_codes ILIKE '%{filters['Specialty']}%'")
+            else:
+                conditions.append(f"topic_codes ILIKE '%{filters['Topic']}%'")
         
         if filters.get("Journal"):
             conditions.append(f"journal_title ILIKE '%{filters['Journal']}%'")
@@ -1424,6 +1427,21 @@ elif navigation == 'Sök Artiklar':
                     )
                     if user_type_input:
                         filters[column] = user_type_input
+                elif column == "Topic":
+                    # Major Area and Specialty Dropdowns
+                    major_areas = sorted(topic_codes_df[topic_codes_df['Code'].str.len() == 3]['Swedish'].unique())
+                    major_areas.insert(0, "All")
+
+                    selected_major_area = right.selectbox("Select Major Area", major_areas)
+                    filters[column] = selected_major_area
+
+                    if selected_major_area != "All":
+                        major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
+                        filtered_specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.startswith(major_code)) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
+                        filtered_specialties.insert(0, "All")
+
+                        selected_specialty = right.selectbox("Select Specialty", filtered_specialties)
+                        filters["Specialty"] = selected_specialty
                 else:
                     user_text_input = right.text_input(
                         f"Filter for {column} containing:",
@@ -1432,6 +1450,12 @@ elif navigation == 'Sök Artiklar':
                         filters[column] = user_text_input
         
         return filters
+
+    # Main Streamlit app
+    st.header("Author Paper Search")
+
+    # Load the topic codes CSV file (replace 'path_to_your_topic_codes.csv' with the actual path)
+    topic_codes_df = pd.read_csv('path_to_your_topic_codes.csv')
 
     # Filter parameters
     filters = filter_dataframe()
