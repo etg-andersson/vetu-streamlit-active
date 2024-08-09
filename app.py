@@ -1,12 +1,12 @@
 # Import necessary libraries
 import streamlit as st
-import pandas as pd
-import psycopg2
-import matplotlib.pyplot as plt
-import plotly.express as px
-from supabase import create_client, Client
-import plotly.io as pio
-import io
+# import pandas as pd
+# import psycopg2
+# import matplotlib.pyplot as plt
+# import plotly.express as px
+# from supabase import create_client, Client
+# import plotly.io as pio
+# import io
 from pathlib import Path
 
 # Configure the Streamlit page
@@ -113,51 +113,51 @@ st.markdown("""
 # Set the default template for Plotly
 pio.templates.default = "ggplot2"
 
-# Construct file paths using Pathlib
-file_path_university = 'affiliations_university_norm.csv'
-file_path_university2 = 'affiliations_university_decoder_list.csv'
-file_path_topic_codes = 'Topic_Codes.csv'
+# # Construct file paths using Pathlib
+# file_path_university = 'affiliations_university_norm.csv'
+# file_path_university2 = 'affiliations_university_decoder_list.csv'
+# file_path_topic_codes = 'Topic_Codes.csv'
 
-# Read the CSV files
-try:
-    df_university = pd.read_csv(file_path_university)
-    df_university2 = pd.read_csv(file_path_university2)
-except Exception as e:
-    st.error(f"Error loading files: {e}")
+# # Read the CSV files
+# try:
+#     df_university = pd.read_csv(file_path_university)
+#     df_university2 = pd.read_csv(file_path_university2)
+# except Exception as e:
+#     st.error(f"Error loading files: {e}")
 
-# Load university data
-universities = pd.read_csv(file_path_university)
-universities['Code'] = universities['Code'].astype(str)
+# # Load university data
+# universities = pd.read_csv(file_path_university)
+# universities['Code'] = universities['Code'].astype(str)
 
-# Load university decoder list data
-universities2 = pd.read_csv(file_path_university2)
-universities2['Code'] = universities2['Code'].astype(str)
+# # Load university decoder list data
+# universities2 = pd.read_csv(file_path_university2)
+# universities2['Code'] = universities2['Code'].astype(str)
 
-#Import topic codes indexing
-topic_codes_df = pd.read_csv(file_path_topic_codes, sep=';')
-topic_codes_df['Code'] = topic_codes_df['Code'].astype(str)
+# #Import topic codes indexing
+# topic_codes_df = pd.read_csv(file_path_topic_codes, sep=';')
+# topic_codes_df['Code'] = topic_codes_df['Code'].astype(str)
 
-# Extract unique major areas and specialties
-major_areas = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 3) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'])
-specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 5) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'])
+# # Extract unique major areas and specialties
+# major_areas = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 3) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'])
+# specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.len() == 5) & (topic_codes_df['Code'].str.startswith('3'))]['Swedish'])
 
-# Add "All" option to the dropdowns
-major_areas.insert(0, "All")
-specialties.insert(0, "All")
+# # Add "All" option to the dropdowns
+# major_areas.insert(0, "All")
+# specialties.insert(0, "All")
 
-# Accessing Supabase secrets
-secrets = st.secrets["supabase"]
+# # Accessing Supabase secrets
+# secrets = st.secrets["supabase"]
 
-# Function to create a connection to the PostgreSQL database
-def create_conn():
-    conn = psycopg2.connect(
-        host=secrets["host_hidden"],
-        dbname=secrets["db_hidden"],
-        user=secrets["user_hidden"],
-        password=secrets["password_hidden"],
-        port=secrets["port_hidden"]
-    )
-    return conn
+# # Function to create a connection to the PostgreSQL database
+# def create_conn():
+#     conn = psycopg2.connect(
+#         host=secrets["host_hidden"],
+#         dbname=secrets["db_hidden"],
+#         user=secrets["user_hidden"],
+#         password=secrets["password_hidden"],
+#         port=secrets["port_hidden"]
+#     )
+#     return conn
 
 # Create a sidebar with a header
 st.sidebar.header(' ')
@@ -175,112 +175,236 @@ st.write('---')
 
 if navigation == 'Översikt':
 
-    from overview import fetch_overview_data
-    from overview import fetch_papers_per_year
-    from overview import bar_plot_total_papers_per_year
-    from overview import calculate_percentage_composition_citations
-    from overview import bar_plot_citation_composition
-    from overview import bar_plot_total_citations
+    from overview import overview_view
+
+    overview_view()
+
+    # # Get all the data
+    # def fetch_impact_citation_data():
+    #         conn = create_conn()
+    #         citation_impact_query = "SELECT citations, year, impactful_citations FROM vetu_paper"
+    #         author_query = "SELECT name FROM vetu_author"
+            
+    #         citation_impact_df = pd.read_sql_query(citation_impact_query, conn)
+    #         author_df = pd.read_sql_query(author_query, conn)
+
+    #         citation_columns = ['year', 'citations']
+    #         impact_columns = ['citations', 'year', 'impactful_citations']
+            
+    #         citation_df = citation_impact_df[citation_columns]
+    #         impact_df = citation_impact_df[impact_columns]
+
+
+    #         conn.close()
+    #         return impact_df, citation_df, author_df
     
-    # Create two columns for the layout
-    col1, col2 = st.columns(2)
+    # # Create two columns for the layout
+    # col1, col2 = st.columns(2)
 
-    # Column 1: Impact Summary
-    with col1:
+    # # Column 1: Impact Summary
+    # with col1:
 
-        total_citations, total_papers, total_authors, percentage_papers_cited_more_than_10, percentage_papers_cited_6_through_10, percentage_papers_cited_5_or_less, citation_df, impact_df = fetch_overview_data()
+    #     # Fetch data
+    #     impact_df, citation_df, impact_df_author = fetch_impact_citation_data()
 
-        # Display the info box
-        st.markdown(f"""
-        <div style="background-color: #d9d9d9; padding: 20px; border-radius: 15px;">
-            <h3 style="color: #333;">Impact Summary</h3>
-            <p><strong>Total Citations:</strong> {total_citations}</p>
-            <p><strong>Total Number of Papers:</strong> {total_papers}</p>
-            <p><strong>Total Number of Authors:</strong> {total_authors}</p>
-            <p><strong>Percentage of Papers with >10 citations:</strong> {percentage_papers_cited_more_than_10}%</p>
-            <p><strong>Percentage of Papers with 6-10 citations:</strong> {percentage_papers_cited_6_through_10}%</p>
-            <p><strong>Percentage of Papers with ≤5 citations:</strong> {percentage_papers_cited_5_or_less}%</p>
-        </div>
-        """, unsafe_allow_html=True)
+    #     # Calculate totals
+    #     total_citations = impact_df['citations'].sum()
+    #     total_impactful_citations = impact_df['impactful_citations'].sum()
+    #     total_papers = impact_df['citations'].count()
+    #     total_authors = impact_df_author['name'].nunique()
 
-        # Add a separator
-        st.write('---')
+    #     # Categorize papers based on citation counts
+    #     citation_df['citation_category'] = pd.cut(
+    #         citation_df['citations'],
+    #         bins=[-1, 5, 10, citation_df['citations'].max()],
+    #         labels=['≤5 Citations', '6-10 Citations', '>10 Citations']
+    #     )
 
-    # Column 2: Papers Published Each Year
-    with col2:
+    #     # Calculate citation statistics
+    #     total_papers_cited_10_or_less = citation_df[citation_df['citation_category'].isin(['≤5 Citations', '6-10 Citations'])].shape[0]
+    #     percentage_papers_cited_10_or_less = round(total_papers_cited_10_or_less * 100 / total_papers, 2)
 
-        papers_per_year = fetch_papers_per_year()
+    #     total_papers_cited_5_or_less = citation_df[citation_df['citation_category'].isin(['≤5 Citations'])].shape[0]
+    #     percentage_papers_cited_5_or_less = round(total_papers_cited_5_or_less * 100 / total_papers, 2)
 
-        overview_total_papers_per_year = bar_plot_total_papers_per_year(papers_per_year)
+    #     percentage_papers_cited_more_than_10 = round(100 - percentage_papers_cited_10_or_less - percentage_papers_cited_5_or_less, 2)
 
-        # Display the plot in Streamlit
-        st.plotly_chart(overview_total_papers_per_year)
+    #     # Display the info box
+    #     st.markdown(f"""
+    #     <div style="background-color: #d9d9d9; padding: 20px; border-radius: 15px;">
+    #         <h3 style="color: #333;">Impact Summary</h3>
+    #         <p><strong>Total Citations:</strong> {total_citations}</p>
+    #         <p><strong>Total Number of Papers:</strong> {total_papers}</p>
+    #         <p><strong>Total Number of Authors:</strong> {total_authors}</p>
+    #         <p><strong>Percentage of Papers with >10 citations:</strong> {percentage_papers_cited_more_than_10}%</p>
+    #         <p><strong>Percentage of Papers with 6-10 citations:</strong> {percentage_papers_cited_10_or_less}%</p>
+    #         <p><strong>Percentage of Papers with ≤5 citations:</strong> {percentage_papers_cited_5_or_less}%</p>
+    #     </div>
+    #     """, unsafe_allow_html=True)
 
-        # Check if 'fig' is defined and is an instance of a Plotly figure
-        if overview_total_papers_per_year is not None:
-            # Save the figure to a PDF buffer
-            pdf_buffer = io.BytesIO()
-            overview_total_papers_per_year.write_image(pdf_buffer, format='pdf')
+    #     # Add a separator
+    #     st.write('---')
 
-            # Reset the buffer position to the beginning
-            pdf_buffer.seek(0)
+    # # Column 2: Papers Published Each Year
+    # with col2:
+    #     def fetch_papers_per_year():
+    #         conn = create_conn()
+    #         query = "SELECT year FROM vetu_paper"
+    #         df = pd.read_sql_query(query, conn)
+    #         conn.close()
+    #         return df
 
-            # Add a button to download the figure as a PDF
-            st.download_button(
-                label="Download as PDF",
-                data=pdf_buffer,
-                file_name="vetu_figure.pdf",
-                mime="application/pdf",
-                key="overview_total_papers_per_year"
-            )
+    #     # Fetch data
+    #     df = fetch_papers_per_year()
 
-    pivot_df = calculate_percentage_composition_citations(citation_df)
+    #     # Group by year and count the number of papers
+    #     papers_per_year = df['year'].value_counts().reset_index()
+    #     papers_per_year.columns = ['Year', 'Total Papers']
+    #     papers_per_year = papers_per_year.sort_values('Year')
 
-    overview_citation_composition = bar_plot_citation_composition(pivot_df)
+    #     # Plot the bar chart for total papers published each year
+    #     fig1 = px.bar(
+    #         papers_per_year, 
+    #         x='Year', 
+    #         y='Total Papers', 
+    #         title='Total Papers Published Each Year',
+    #         labels={'Year': 'Year', 'Total Papers': 'Number of Papers'}
+    #     )
+        
+    #     # Update the x-axis range to start at 1990
+    #     fig1.update_layout(
+    #         xaxis=dict(
+    #             range=[1989, 2025],
+    #             tickmode='linear',
+    #             tick0=1990,
+    #             dtick=5
+    #         )
+    #     )
 
-    # Display the plot in Streamlit
-    st.plotly_chart(overview_citation_composition)
+    #     # Display the plot in Streamlit
+    #     st.plotly_chart(fig1)
 
-    # Check if 'fig' is defined and is an instance of a Plotly figure
-    if overview_citation_composition is not None:
-        # Save the figure to a PDF buffer
-        pdf_buffer = io.BytesIO()
-        overview_citation_composition.write_image(pdf_buffer, format='pdf')
+    #     # Check if 'fig' is defined and is an instance of a Plotly figure
+    #     if fig1 is not None:
+    #         # Save the figure to a PDF buffer
+    #         pdf_buffer = io.BytesIO()
+    #         fig1.write_image(pdf_buffer, format='pdf')
 
-        # Reset the buffer position to the beginning
-        pdf_buffer.seek(0)
+    #         # Reset the buffer position to the beginning
+    #         pdf_buffer.seek(0)
 
-        # Add a button to download the figure as a PDF
-        st.download_button(
-            label="Download as PDF",
-            data=pdf_buffer,
-            file_name="vetu_figure.pdf",
-            mime="application/pdf",
-            key="overview_citation_composition"
-        )
+    #         # Add a button to download the figure as a PDF
+    #         st.download_button(
+    #             label="Download as PDF",
+    #             data=pdf_buffer,
+    #             file_name="vetu_figure.pdf",
+    #             mime="application/pdf",
+    #             key="oversikt_fig1"
+    #         )
 
-    overview_total_citations= bar_plot_total_citations(impact_df)
+    # # Calculate the percentage composition for each year
+    # composition_df = citation_df.groupby(['year', 'citation_category']).size().reset_index(name='count')
+    # total_per_year = composition_df.groupby('year')['count'].transform('sum')
+    # composition_df['percentage'] = composition_df['count'] / total_per_year * 100
 
-    # Display the plot in Streamlit
-    st.plotly_chart(overview_total_citations)
+    # # Pivot the data for plotting
+    # pivot_df = composition_df.pivot(index='year', columns='citation_category', values='percentage').fillna(0)
 
-    # Check if 'fig' is defined and is an instance of a Plotly figure
-    if overview_total_citations is not None:
-        # Save the figure to a PDF buffer
-        pdf_buffer = io.BytesIO()
-        overview_total_citations.write_image(pdf_buffer, format='pdf')
+    # # Define custom colors
+    # custom_colors = ['#F60909', '#FFF710', '#11C618']  # Red, yellow, green
 
-        # Reset the buffer position to the beginning
-        pdf_buffer.seek(0)
+    # # Plot the percentage composition as a stacked bar chart
+    # fig2 = px.bar(
+    #     pivot_df, 
+    #     x=pivot_df.index, 
+    #     y=pivot_df.columns, 
+    #     title='Percentage of Papers by Citation Counts (1990-2024)',
+    #     labels={'value': 'Percentage', 'year': 'Year'}, 
+    #     barmode='stack', 
+    #     color_discrete_sequence=custom_colors
+    # )
 
-        # Add a button to download the figure as a PDF
-        st.download_button(
-            label="Download as PDF",
-            data=pdf_buffer,
-            file_name="vetu_figure.pdf",
-            mime="application/pdf",
-            key="overview_total_citations"
-        )
+    # # Update the x-axis range to start at 1990
+    # fig2.update_layout(
+    #     xaxis=dict(
+    #         range=[1990, 2025],
+    #         tickmode='linear',
+    #         tick0=1990,
+    #         dtick=1
+    #     ),
+    #     yaxis=dict(
+    #         title='Percentage'
+    #     ),
+    #     legend_title_text='Citation Groups'
+    # )
+
+    # # Display the plot in Streamlit
+    # st.plotly_chart(fig2)
+
+    # # Check if 'fig' is defined and is an instance of a Plotly figure
+    # if fig2 is not None:
+    #     # Save the figure to a PDF buffer
+    #     pdf_buffer = io.BytesIO()
+    #     fig2.write_image(pdf_buffer, format='pdf')
+
+    #     # Reset the buffer position to the beginning
+    #     pdf_buffer.seek(0)
+
+    #     # Add a button to download the figure as a PDF
+    #     st.download_button(
+    #         label="Download as PDF",
+    #         data=pdf_buffer,
+    #         file_name="vetu_figure.pdf",
+    #         mime="application/pdf",
+    #         key="oversikt_fig2"
+    #     )
+
+    # # Prepare the impact data for plotting
+    # impact_df = impact_df.rename(columns={
+    #     "year": "Year",
+    #     "citations": "Total Citations",
+    #     "impactful_citations": "Impactful Citations",
+    # }).groupby('Year').sum().reset_index()
+
+    # # Plot the bar chart for total citations each year
+    # fig3 = px.bar(
+    #     impact_df, 
+    #     x='Year', 
+    #     y='Total Citations', 
+    #     title='Total Papers Cited Each Year',
+    #     labels={'Year': 'Year', 'Total Citations': 'Total Citations'}
+    # )
+
+    # # Update the x-axis range to start at 1990
+    # fig3.update_layout(
+    #     xaxis=dict(
+    #         range=[1989, 2025],
+    #         tickmode='linear',
+    #         tick0=1990,
+    #         dtick=5
+    #     )
+    # )
+
+    # # Display the plot in Streamlit
+    # st.plotly_chart(fig3)
+
+    # # Check if 'fig' is defined and is an instance of a Plotly figure
+    # if fig3 is not None:
+    #     # Save the figure to a PDF buffer
+    #     pdf_buffer = io.BytesIO()
+    #     fig3.write_image(pdf_buffer, format='pdf')
+
+    #     # Reset the buffer position to the beginning
+    #     pdf_buffer.seek(0)
+
+    #     # Add a button to download the figure as a PDF
+    #     st.download_button(
+    #         label="Download as PDF",
+    #         data=pdf_buffer,
+    #         file_name="vetu_figure.pdf",
+    #         mime="application/pdf",
+    #         key="oversikt_fig3"
+    #     )
 
 
 elif navigation == 'Akademi & Högskola':
@@ -290,7 +414,6 @@ elif navigation == 'Akademi & Högskola':
     university_view()
 
     # # Function to fetch data from the database based on filters
-    # #### Tillfällig filter för titel istället för topic
     # def fetch_data(university, institute, department, topic_filter, type_filter, from_year, to_year):
     #     conditions = []
     #     if university != "All":
@@ -575,18 +698,8 @@ elif navigation == 'Akademi & Högskola':
     #     )
     #     return fig
 
-    # # Initialize session state for figures
-    # if 'fig1' not in st.session_state:
-    #     st.session_state['fig1'] = None
-    # if 'fig2' not in st.session_state:
-    #     st.session_state['fig2'] = None
-    # if 'fig3' not in st.session_state:
-    #     st.session_state['fig3'] = None
-
-    # # Define search button
     # search_button = st.button("Search")
 
-    # # Check if the search button was pressed
     # if search_button:
     #     # Fetch the data
     #     data = fetch_data(selected_university, selected_institute, selected_department, title_filter, type_filter, fran_ar, till_ar)
@@ -608,25 +721,23 @@ elif navigation == 'Akademi & Högskola':
     #             else:
     #                 pass
 
-    #         st.session_state['fig1'] = create_publications_chart(data, data2, 'Publications Over Time')
-    #         st.session_state['fig2'] = create_citations_chart(data, data2, 'Total Citations Over Time')
-    #         st.session_state['fig3'] = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time')
+    #         fig1 = create_publications_chart(data, data2, 'Publications Over Time')
+    #         fig2 = create_citations_chart(data, data2, 'Total Citations Over Time')
+    #         fig3 = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time')
             
     #     else:
-    #         st.session_state['fig1'] = None
-    #         st.session_state['fig2'] = None
-    #         st.session_state['fig3'] = None
+    #         fig1 = None
+    #         fig2 = None
+    #         fig3 = None
     #         st.write("No data available for the given filters and year range.")
+    
+    # if not data.empty or not data2.empty:
+    #     st.plotly_chart(fig1)
+    #     st.plotly_chart(fig2)
+    #     st.plotly_chart(fig3)
 
-    # # Display the charts if they exist
-    # if st.session_state['fig1'] is not None:
-    #     st.plotly_chart(st.session_state['fig1'])
-    #     st.plotly_chart(st.session_state['fig2'])
-    #     st.plotly_chart(st.session_state['fig3'])
-
-    #     # Add download buttons
     #     pdf_buffer1 = io.BytesIO()
-    #     st.session_state['fig1'].write_image(pdf_buffer1, format='pdf')
+    #     fig1.write_image(pdf_buffer1, format='pdf')
     #     pdf_buffer1.seek(0)
     #     st.download_button(
     #         label="Download publications chart as PDF",
@@ -636,7 +747,7 @@ elif navigation == 'Akademi & Högskola':
     #     )
         
     #     pdf_buffer2 = io.BytesIO()
-    #     st.session_state['fig2'].write_image(pdf_buffer2, format='pdf')
+    #     fig2.write_image(pdf_buffer2, format='pdf')
     #     pdf_buffer2.seek(0)
     #     st.download_button(
     #         label="Download total citations chart as PDF",
@@ -646,7 +757,7 @@ elif navigation == 'Akademi & Högskola':
     #     )
 
     #     pdf_buffer3 = io.BytesIO()
-    #     st.session_state['fig3'].write_image(pdf_buffer3, format='pdf')
+    #     fig3.write_image(pdf_buffer3, format='pdf')
     #     pdf_buffer3.seek(0)
     #     st.download_button(
     #         label="Download average citations per paper chart as PDF",
@@ -658,731 +769,754 @@ elif navigation == 'Akademi & Högskola':
     #     st.write("Please select filters.")
 
 elif navigation == 'Region (ALF)':
-    def fetch_affiliations(search_text, type_filter, topic_filter, major_code, specialty_code, from_year, to_year):
-        conditions = []
+
+    from regions import regions_view
+
+    regions_view()
+
+    # def fetch_affiliations(search_text, type_filter, topic_filter, major_code, specialty_code, from_year, to_year):
+    #     conditions = []
         
-        # Remove commas from the input search text
-        search_text = search_text.replace(',', '')
+    #     # Remove commas from the input search text
+    #     search_text = search_text.replace(',', '')
 
-        # Parse the search_text for multiple search queries separated by semicolons
-        search_queries = [query.strip() for query in search_text.split(';')]
+    #     # Parse the search_text for multiple search queries separated by semicolons
+    #     search_queries = [query.strip() for query in search_text.split(';')]
         
-        query_conditions = []
+    #     query_conditions = []
         
-        for query in search_queries:
-            # Check if the query is within quotes for exact order
-            if '"' in query:
-                exact_phrases = [phrase.strip('"') for phrase in query.split('"') if phrase]
-                for phrase in exact_phrases:
-                    query_conditions.append(f"affiliations ILIKE '%{phrase}%'")
-            else:
-                # Split the query by spaces for unordered search terms
-                terms = query.split()
-                term_conditions = [f"affiliations ILIKE '%{term}%'" for term in terms]
-                query_conditions.append(f"({' AND '.join(term_conditions)})")
+    #     for query in search_queries:
+    #         # Check if the query is within quotes for exact order
+    #         if '"' in query:
+    #             exact_phrases = [phrase.strip('"') for phrase in query.split('"') if phrase]
+    #             for phrase in exact_phrases:
+    #                 query_conditions.append(f"affiliations ILIKE '%{phrase}%'")
+    #         else:
+    #             # Split the query by spaces for unordered search terms
+    #             terms = query.split()
+    #             term_conditions = [f"affiliations ILIKE '%{term}%'" for term in terms]
+    #             query_conditions.append(f"({' AND '.join(term_conditions)})")
 
-        # Combine all query conditions with OR
-        conditions.append(f"({' OR '.join(query_conditions)})")
+    #     # Combine all query conditions with OR
+    #     conditions.append(f"({' OR '.join(query_conditions)})")
 
-        if type_filter:
-            conditions.append(f"publication_type ILIKE '%{type_filter}%'")
+    #     if type_filter:
+    #         conditions.append(f"publication_type ILIKE '%{type_filter}%'")
         
-        if title_filter:
-            titles = title_filter.split(',')
-            title_conditions = [f"title ILIKE '%{title.strip()}%'" for title in titles]
-            conditions.append(f"({' OR '.join(title_conditions)})")
+    #     if title_filter:
+    #         titles = title_filter.split(',')
+    #         title_conditions = [f"title ILIKE '%{title.strip()}%'" for title in titles]
+    #         conditions.append(f"({' OR '.join(title_conditions)})")
         
-        if major_code != "All":
-            if specialty_code == "All":
-                conditions.append(f"topic_codes ILIKE '%{major_code}%'")
-            else:
-                conditions.append(f"topic_codes ILIKE '%{specialty_code}%'")
+    #     if major_code != "All":
+    #         if specialty_code == "All":
+    #             conditions.append(f"topic_codes ILIKE '%{major_code}%'")
+    #         else:
+    #             conditions.append(f"topic_codes ILIKE '%{specialty_code}%'")
         
-        conditions.append(f"year >= {from_year}")
-        conditions.append(f"year <= {to_year}")
+    #     conditions.append(f"year >= {from_year}")
+    #     conditions.append(f"year <= {to_year}")
         
-        where_clause = " AND ".join(conditions)
+    #     where_clause = " AND ".join(conditions)
 
-        query = f"""
-            SELECT year, COUNT(*) as publication_count, SUM(citations) as total_citations, AVG(citations) as avg_citations_per_paper
-            FROM vetu_paper
-            WHERE {where_clause}
-            GROUP BY year
-            ORDER BY year;
-        """
+    #     query = f"""
+    #         SELECT year, COUNT(*) as publication_count, SUM(citations) as total_citations, AVG(citations) as avg_citations_per_paper
+    #         FROM vetu_paper
+    #         WHERE {where_clause}
+    #         GROUP BY year
+    #         ORDER BY year;
+    #     """
         
-        conn = create_conn()
-        df = pd.read_sql(query, conn)
-        conn.close()
+    #     conn = create_conn()
+    #     df = pd.read_sql(query, conn)
+    #     conn.close()
         
-        return df
+    #     return df
 
-    # Create a Streamlit page for affiliation search
-    st.subheader("Affiliation Search")
+    # # Create a Streamlit page for affiliation search
+    # st.subheader("Affiliation Search")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        # Create a year range slider
-        year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
-        fran_ar, till_ar = year_range
+    # col1, col2 = st.columns(2)
+    # with col1:
+    #     # Create a year range slider
+    #     year_range = st.slider('Year range:', min_value=1990, max_value=2024, value=(1990, 2024))
+    #     fran_ar, till_ar = year_range
 
-    with col2: 
-        st.write("")
-        st.write("")
-        additional_filters = st.checkbox("Lägg till fler filter")
+    # with col2: 
+    #     st.write("")
+    #     st.write("")
+    #     additional_filters = st.checkbox("Lägg till fler filter")
 
-    if additional_filters:
-        # Additional filters for article type and topic
-        col3, col4 = st.columns(2)
-        col5, col6 = st.columns(2)
-        with col3:
-            user_type_input = st.selectbox(
-                f"Select article type",
-                options=["All", "Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
-            )
-            type_filter = "" if user_type_input == "All" else user_type_input
+    # if additional_filters:
+    #     # Additional filters for article type and topic
+    #     col3, col4 = st.columns(2)
+    #     col5, col6 = st.columns(2)
+    #     with col3:
+    #         user_type_input = st.selectbox(
+    #             f"Select article type",
+    #             options=["All", "Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
+    #         )
+    #         type_filter = "" if user_type_input == "All" else user_type_input
 
-        with col4:
-            user_title_input = st.text_input(
-                f"Filter for Title containing:",
-            )
-            title_filter = user_title_input if user_title_input else ""
+    #     with col4:
+    #         user_title_input = st.text_input(
+    #             f"Filter for Title containing:",
+    #         )
+    #         title_filter = user_title_input if user_title_input else ""
 
-        with col5:
-            selected_major_area = st.selectbox("Select Major Area", major_areas)
+    #     with col5:
+    #         selected_major_area = st.selectbox("Select Major Area", major_areas)
 
-        with col6:
-            if selected_major_area == "All":
-                selected_specialty = st.selectbox("Select Specialty", ["All"])
-                major_code = "All"
-                specialty_code = "All"
-            else:
-                # Filter specialties based on selected major area
-                major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
-                filtered_specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.startswith(major_code) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
-                filtered_specialties.insert(0, "All")
-                selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
-                if selected_specialty == "All":
-                    specialty_code = "All"
-                elif not topic_codes_df[topic_codes_df['Swedish'] == selected_specialty].empty:
-                    specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
-                else:
-                    specialty_code = ""
+    #     with col6:
+    #         if selected_major_area == "All":
+    #             selected_specialty = st.selectbox("Select Specialty", ["All"])
+    #             major_code = "All"
+    #             specialty_code = "All"
+    #         else:
+    #             # Filter specialties based on selected major area
+    #             major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
+    #             filtered_specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.startswith(major_code) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
+    #             filtered_specialties.insert(0, "All")
+    #             selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
+    #             if selected_specialty == "All":
+    #                 specialty_code = "All"
+    #             elif not topic_codes_df[topic_codes_df['Swedish'] == selected_specialty].empty:
+    #                 specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
+    #             else:
+    #                 specialty_code = ""
 
-    else:
-        title_filter = ""
-        type_filter = ""
-        major_code = "All"
-        specialty_code = "All"
+    # else:
+    #     title_filter = ""
+    #     type_filter = ""
+    #     major_code = "All"
+    #     specialty_code = "All"
 
-    # Create a text input for search terms
-    search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
+    # # Create a text input for search terms
+    # search_text = st.text_input("Enter search terms (use semicolons to separate multiple queries):")
 
-    # Add a checkbox for comparison
-    compare = st.checkbox("Jämför", value=False)
+    # # Add a checkbox for comparison
+    # compare = st.checkbox("Jämför", value=False)
 
-    # Conditional second search bar for comparison
-    if compare:
-        search_text_2 = st.text_input("Enter search terms for comparison (use semicolons to separate multiple queries):")
-    else:
-        search_text_2 = ""
+    # # Conditional second search bar for comparison
+    # if compare:
+    #     search_text_2 = st.text_input("Enter search terms for comparison (use semicolons to separate multiple queries):")
+    # else:
+    #     search_text_2 = ""
 
-    # Function to create the bar chart for publication count
-    def create_publications_chart(data1, data2, title):
-        data1['Search'] = 'Search 1'
-        if not data2.empty:
-            data2['Search'] = 'Search 2'
-            combined_data = pd.concat([data1, data2])
-        else:
-            combined_data = data1
+    # # Fetch the data based on the search terms
+    # if search_text:
+    #     data1 = fetch_affiliations(search_text, type_filter, title_filter, major_code, specialty_code, fran_ar, till_ar)
+    #     if search_text_2:
+    #         data2 = fetch_affiliations(search_text_2, type_filter, title_filter, major_code, specialty_code, fran_ar, till_ar)
+    #     else:
+    #         data2 = pd.DataFrame()
 
-        fig = px.bar(combined_data, x='year', y='publication_count', color='Search', barmode='group',
-                    title=title, labels={'year': 'Year', 'publication_count': 'Number of Publications', 'Search': 'Search Query'})
-        fig.update_layout(
-            xaxis=dict(
-                tickmode='linear',
-                tick0=fran_ar,
-                dtick=1,
-                range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
-            ),
-            legend_title_text='Affiliation'
-        )
-        return fig
+    #     # Function to create the bar chart for publication count
+    #     def create_publications_chart(data1, data2, title):
+    #         data1['Search'] = 'Search 1'
+    #         if not data2.empty:
+    #             data2['Search'] = 'Search 2'
+    #             combined_data = pd.concat([data1, data2])
+    #         else:
+    #             combined_data = data1
 
-    # Function to create the bar chart for total citations
-    def create_citations_chart(data1, data2, title):
-        data1['Search'] = 'Search 1'
-        if not data2.empty:
-            data2['Search'] = 'Search 2'
-            combined_data = pd.concat([data1, data2])
-        else:
-            combined_data = data1
+    #         fig = px.bar(combined_data, x='year', y='publication_count', color='Search', barmode='group',
+    #                     title=title, labels={'year': 'Year', 'publication_count': 'Number of Publications', 'Search': 'Search Query'})
+    #         fig.update_layout(
+    #             xaxis=dict(
+    #                 tickmode='linear',
+    #                 tick0=fran_ar,
+    #                 dtick=1,
+    #                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+    #             ),
+    #             legend_title_text='Affiliation'
+    #         )
+    #         return fig
 
-        fig = px.bar(combined_data, x='year', y='total_citations', color='Search', barmode='group',
-                    title=title, labels={'year': 'Year', 'total_citations': 'Total Citations', 'Search': 'Search Query'})
-        fig.update_layout(
-            xaxis=dict(
-                tickmode='linear',
-                tick0=fran_ar,
-                dtick=1,
-                range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
-            ),
-            legend_title_text='Affiliation'
-        )
-        return fig
+    #     # Function to create the bar chart for total citations
+    #     def create_citations_chart(data1, data2, title):
+    #         data1['Search'] = 'Search 1'
+    #         if not data2.empty:
+    #             data2['Search'] = 'Search 2'
+    #             combined_data = pd.concat([data1, data2])
+    #         else:
+    #             combined_data = data1
 
-    # Function to create the bar chart for average citations per paper
-    def create_avg_citations_chart(data1, data2, title):
-        data1['Search'] = 'Search 1'
-        if not data2.empty:
-            data2['Search'] = 'Search 2'
-            combined_data = pd.concat([data1, data2])
-        else:
-            combined_data = data1
+    #         fig = px.bar(combined_data, x='year', y='total_citations', color='Search', barmode='group',
+    #                     title=title, labels={'year': 'Year', 'total_citations': 'Total Citations', 'Search': 'Search Query'})
+    #         fig.update_layout(
+    #             xaxis=dict(
+    #                 tickmode='linear',
+    #                 tick0=fran_ar,
+    #                 dtick=1,
+    #                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+    #             ),
+    #             legend_title_text='Affiliation'
+    #         )
+    #         return fig
 
-        fig = px.bar(combined_data, x='year', y='avg_citations_per_paper', color='Search', barmode='group',
-                    title=title, labels={'year': 'Year', 'avg_citations_per_paper': 'Average Citations per Paper', 'Search': 'Search Query'})
-        fig.update_layout(
-            xaxis=dict(
-                tickmode='linear',
-                tick0=fran_ar,
-                dtick=1,
-                range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
-            ),
-            legend_title_text='Affiliation'
-        )
-        return fig
+    #     # Function to create the bar chart for average citations per paper
+    #     def create_avg_citations_chart(data1, data2, title):
+    #         data1['Search'] = 'Search 1'
+    #         if not data2.empty:
+    #             data2['Search'] = 'Search 2'
+    #             combined_data = pd.concat([data1, data2])
+    #         else:
+    #             combined_data = data1
 
-    # Fetch the data based on the search terms
-    if search_text:
-        data1 = fetch_affiliations(search_text, type_filter, title_filter, major_code, specialty_code, fran_ar, till_ar)
-        if search_text_2:
-            data2 = fetch_affiliations(search_text_2, type_filter, title_filter, major_code, specialty_code, fran_ar, till_ar)
-        else:
-            data2 = pd.DataFrame()
+    #         fig = px.bar(combined_data, x='year', y='avg_citations_per_paper', color='Search', barmode='group',
+    #                     title=title, labels={'year': 'Year', 'avg_citations_per_paper': 'Average Citations per Paper', 'Search': 'Search Query'})
+    #         fig.update_layout(
+    #             xaxis=dict(
+    #                 tickmode='linear',
+    #                 tick0=fran_ar,
+    #                 dtick=1,
+    #                 range=[fran_ar-0.5, till_ar+0.5]  # Use selected from_year and to_year for range
+    #             ),
+    #             legend_title_text='Affiliation'
+    #         )
+    #         return fig
 
-        # Display the publication count chart
-        if not data1.empty:
-            fig1 = create_publications_chart(data1, data2, 'Publications Over Time')
-            st.plotly_chart(fig1)
+    #     # Display the publication count chart
+    #     if not data1.empty:
+    #         fig1 = create_publications_chart(data1, data2, 'Publications Over Time')
+    #         st.plotly_chart(fig1)
             
-            # Display the total citations chart
-            fig2 = create_citations_chart(data1, data2, 'Total Citations Over Time')
-            st.plotly_chart(fig2)
+    #         # Display the total citations chart
+    #         fig2 = create_citations_chart(data1, data2, 'Total Citations Over Time')
+    #         st.plotly_chart(fig2)
 
-            # Display the average citations per paper chart
-            fig3 = create_avg_citations_chart(data1, data2, 'Average Citations per Paper Over Time')
-            st.plotly_chart(fig3)
+    #         # Display the average citations per paper chart
+    #         fig3 = create_avg_citations_chart(data1, data2, 'Average Citations per Paper Over Time')
+    #         st.plotly_chart(fig3)
             
-            # Add download buttons for the charts
-            pdf_buffer1 = io.BytesIO()
-            fig1.write_image(pdf_buffer1, format='pdf')
-            pdf_buffer1.seek(0)
-            st.download_button(
-                label="Download publications chart as PDF",
-                data=pdf_buffer1,
-                file_name="publications_chart.pdf",
-                mime="application/pdf"
-            )
+    #         # Add download buttons for the charts
+    #         pdf_buffer1 = io.BytesIO()
+    #         fig1.write_image(pdf_buffer1, format='pdf')
+    #         pdf_buffer1.seek(0)
+    #         st.download_button(
+    #             label="Download publications chart as PDF",
+    #             data=pdf_buffer1,
+    #             file_name="publications_chart.pdf",
+    #             mime="application/pdf"
+    #         )
             
-            pdf_buffer2 = io.BytesIO()
-            fig2.write_image(pdf_buffer2, format='pdf')
-            pdf_buffer2.seek(0)
-            st.download_button(
-                label="Download total citations chart as PDF",
-                data=pdf_buffer2,
-                file_name="citations_chart.pdf",
-                mime="application/pdf"
-            )
+    #         pdf_buffer2 = io.BytesIO()
+    #         fig2.write_image(pdf_buffer2, format='pdf')
+    #         pdf_buffer2.seek(0)
+    #         st.download_button(
+    #             label="Download total citations chart as PDF",
+    #             data=pdf_buffer2,
+    #             file_name="citations_chart.pdf",
+    #             mime="application/pdf"
+    #         )
 
-            pdf_buffer3 = io.BytesIO()
-            fig3.write_image(pdf_buffer3, format='pdf')
-            pdf_buffer3.seek(0)
-            st.download_button(
-                label="Download average citations per paper chart as PDF",
-                data=pdf_buffer3,
-                file_name="avg_citations_chart.pdf",
-                mime="application/pdf"
-            )
-        else:
-            st.write("No data available for the given search terms and year range.")
-    else:
-        st.write("Enter search terms to filter the affiliations.")
+    #         pdf_buffer3 = io.BytesIO()
+    #         fig3.write_image(pdf_buffer3, format='pdf')
+    #         pdf_buffer3.seek(0)
+    #         st.download_button(
+    #             label="Download average citations per paper chart as PDF",
+    #             data=pdf_buffer3,
+    #             file_name="avg_citations_chart.pdf",
+    #             mime="application/pdf"
+    #         )
+    #     else:
+    #         st.write("No data available for the given search terms and year range.")
+    # else:
+    #     st.write("Enter search terms to filter the affiliations.")
 
 elif navigation == 'Tidsskrifter':
 
-    st.subheader('Top journals by filter')
+    from journals import journal_view
 
-    from pandas.api.types import (
-        is_categorical_dtype,
-        is_datetime64_any_dtype,
-        is_numeric_dtype,
-        is_object_dtype,
-    )
+    journal_view()
+
+    # st.subheader('Top journals by filter')
+
+    # from pandas.api.types import (
+    #     is_categorical_dtype,
+    #     is_datetime64_any_dtype,
+    #     is_numeric_dtype,
+    #     is_object_dtype,
+    # )
     
 
-    # Function to fetch data from the database
-    def fetch_data_tidsskrift():
-        conn = create_conn()
-        query = "SELECT title, publication_type, abstract_text, affiliation_codes, journal_title, year FROM vetu_paper"
-        df = pd.read_sql_query(query, conn)
-        conn.close()
-        # Rename columns
-        df.rename(columns={
-            'title': 'Title',
-            'publication_type': 'Type',
-            'abstract_text': 'Topic',
-            'affiliation_codes': 'Affiliation',
-            'journal_title': 'Journal',
-            'year': 'Year'
-        }, inplace=True)
-        return df
+    # # Function to fetch data from the database
+    # def fetch_data_tidsskrift():
+    #     conn = create_conn()
+    #     query = "SELECT title, publication_type, abstract_text, affiliation_codes, journal_title, year FROM vetu_paper"
+    #     df = pd.read_sql_query(query, conn)
+    #     conn.close()
+    #     # Rename columns
+    #     df.rename(columns={
+    #         'title': 'Title',
+    #         'publication_type': 'Type',
+    #         'abstract_text': 'Topic',
+    #         'affiliation_codes': 'Affiliation',
+    #         'journal_title': 'Journal',
+    #         'year': 'Year'
+    #     }, inplace=True)
+    #     return df
 
-    def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-        df = df.copy()
-        for col in df.columns:
-            if is_object_dtype(df[col]):
-                try:
-                    df[col] = pd.to_datetime(df[col])
-                except Exception:
-                    pass
-            if is_datetime64_any_dtype(df[col]):
-                df[col] = df[col].dt.tz_localize(None)
+    # def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    #     df = df.copy()
+    #     for col in df.columns:
+    #         if is_object_dtype(df[col]):
+    #             try:
+    #                 df[col] = pd.to_datetime(df[col])
+    #             except Exception:
+    #                 pass
+    #         if is_datetime64_any_dtype(df[col]):
+    #             df[col] = df[col].dt.tz_localize(None)
         
-        modification_container = st.container()
-        with modification_container:
-            filter_columns = [col for col in df.columns if col != 'Journal']
-            to_filter_columns = st.multiselect("Filter results based on", filter_columns, default=['Year'])
-            for column in to_filter_columns:
-                left, right = st.columns((1, 20))
+    #     modification_container = st.container()
+    #     with modification_container:
+    #         filter_columns = [col for col in df.columns if col != 'Journal']
+    #         to_filter_columns = st.multiselect("Filter results based on", filter_columns, default=['Year'])
+    #         for column in to_filter_columns:
+    #             left, right = st.columns((1, 20))
 
-                if column == "Type":
-                    user_type_input = right.selectbox(
-                        f"Select {column}",
-                        options=df[column].unique(),
-                    )
-                    df = df[df[column] == user_type_input]
+    #             if column == "Type":
+    #                 user_type_input = right.selectbox(
+    #                     f"Select {column}",
+    #                     options=df[column].unique(),
+    #                 )
+    #                 df = df[df[column] == user_type_input]
 
-                elif column == "Affiliation": 
-                    selected_university = right.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
-                    if selected_university != "All":
-                        selected_university_code = universities2[universities2['Department'] == selected_university]['Code'].values[0]
-                        selected_institute = right.selectbox('Institut:',
-                        ["All"] + universities2[
-                            (universities2['Code'].str.startswith(selected_university_code + '.')) & (universities2['Code'].str.count('\.')== 1)]['Department'].tolist(), index=0
-                        ) # Institut
-                        if selected_institute != "All":
-                            selected_institute_code = universities2[universities2['Department'] == selected_institute]['Code'].values[0]
-                            selected_department = right.selectbox('Department:', 
-                            ["All"] + universities2[
-                                (universities2['Code'].str.startswith(selected_institute_code + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
-                            ) # Avdelning
-                            if selected_department != "All":
-                                selected_department_code = universities2[universities2['Department'] == selected_department]['Code'].values[0]
-                            else:
-                                selected_department_code = ""
-                        else:
-                            selected_institute_code = ""
-                    else:
-                        selected_university_code = ""
+    #             elif column == "Affiliation": 
+    #                 selected_university = right.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
+    #                 if selected_university != "All":
+    #                     selected_university_code = universities2[universities2['Department'] == selected_university]['Code'].values[0]
+    #                     selected_institute = right.selectbox('Institut:',
+    #                     ["All"] + universities2[
+    #                         (universities2['Code'].str.startswith(selected_university_code + '.')) & (universities2['Code'].str.count('\.')== 1)]['Department'].tolist(), index=0
+    #                     ) # Institut
+    #                     if selected_institute != "All":
+    #                         selected_institute_code = universities2[universities2['Department'] == selected_institute]['Code'].values[0]
+    #                         selected_department = right.selectbox('Department:', 
+    #                         ["All"] + universities2[
+    #                             (universities2['Code'].str.startswith(selected_institute_code + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
+    #                         ) # Avdelning
+    #                         if selected_department != "All":
+    #                             selected_department_code = universities2[universities2['Department'] == selected_department]['Code'].values[0]
+    #                         else:
+    #                             selected_department_code = ""
+    #                     else:
+    #                         selected_institute_code = ""
+    #                 else:
+    #                     selected_university_code = ""
 
-                    if selected_university != "All":
-                        if selected_institute != "All":
-                            if selected_department != "All":
-                                affiliation_search = f'{selected_university_code}.{selected_institute_code}.{selected_department_code}'
-                            else:
-                                affiliation_search = f'{selected_university_code}.{selected_institute_code}'
-                        else: 
-                            affiliation_search = f'{selected_university_code}'
+    #                 if selected_university != "All":
+    #                     if selected_institute != "All":
+    #                         if selected_department != "All":
+    #                             affiliation_search = f'{selected_university_code}.{selected_institute_code}.{selected_department_code}'
+    #                         else:
+    #                             affiliation_search = f'{selected_university_code}.{selected_institute_code}'
+    #                     else: 
+    #                         affiliation_search = f'{selected_university_code}'
 
-                    if selected_university != "All":
-                        df = df[
-                            df[column].astype(str).str.startswith(affiliation_search) |
-                            df[column].astype(str).str.contains(f';{affiliation_search}')
-                        ]
+    #                 if selected_university != "All":
+    #                     df = df[
+    #                         df[column].astype(str).str.startswith(affiliation_search) |
+    #                         df[column].astype(str).str.contains(f';{affiliation_search}')
+    #                     ]
 
-                elif column == "Year":
-                    year_range = right.slider('År:', min_value=1990, max_value=2024, value=(1990, 2024)) # År slider
-                    fran_ar, till_ar = year_range
-                    df = df.loc[df[column].between(fran_ar, till_ar)]
+    #             elif column == "Year":
+    #                 year_range = right.slider('År:', min_value=1990, max_value=2024, value=(1990, 2024)) # År slider
+    #                 fran_ar, till_ar = year_range
+    #                 df = df.loc[df[column].between(fran_ar, till_ar)]
 
-                elif is_categorical_dtype(df[column]) or df[column].nunique() < 50:
-                    user_cat_input = right.multiselect(
-                        f"Values for {column}",
-                        df[column].unique(),
-                        default=list(df[column].unique()),
-                    )
-                    df = df[df[column].isin(user_cat_input)]
+    #             elif is_categorical_dtype(df[column]) or df[column].nunique() < 50:
+    #                 user_cat_input = right.multiselect(
+    #                     f"Values for {column}",
+    #                     df[column].unique(),
+    #                     default=list(df[column].unique()),
+    #                 )
+    #                 df = df[df[column].isin(user_cat_input)]
 
-                else:
-                    user_text_input = right.text_input(
-                        f"Filter for {column} containing:",
-                    )
-                    if user_text_input:
-                        df = df[df[column].astype(str).str.contains(user_text_input, case=False)]
-        return df
+    #             else:
+    #                 user_text_input = right.text_input(
+    #                     f"Filter for {column} containing:",
+    #                 )
+    #                 if user_text_input:
+    #                     df = df[df[column].astype(str).str.contains(user_text_input, case=False)]
+    #     return df
 
-    # Fetch data
-    df = fetch_data_tidsskrift()
+    # # Fetch data
+    # df = fetch_data_tidsskrift()
 
-    # Filter the DataFrame
-    filtered_df = filter_dataframe(df)
+    # # Filter the DataFrame
+    # filtered_df = filter_dataframe(df)
 
-    st.write(' ')
+    # st.write(' ')
 
-    # Search button
-    search_button = st.button('Search')
+    # # Search button
+    # search_button = st.button('Search')
 
-    st.write(' ')
+    # st.write(' ')
 
-    # Display matching results and journal counts
-    if search_button:
-        if not filtered_df.empty:
-            # Group by journal and count the number of papers
-            journal_counts = filtered_df['Journal'].value_counts().reset_index()
-            journal_counts.index = journal_counts.index + 1
-            journal_counts.columns = ['Journal', 'Total Papers']
+    # # Display matching results and journal counts
+    # if search_button:
+    #     if not filtered_df.empty:
+    #         # Group by journal and count the number of papers
+    #         journal_counts = filtered_df['Journal'].value_counts().reset_index()
+    #         journal_counts.index = journal_counts.index + 1
+    #         journal_counts.columns = ['Journal', 'Total Papers']
 
-            # Display the grouped DataFrame
-            st.write(f"Number of results: {len(filtered_df)}")
+    #         # Display the grouped DataFrame
+    #         st.write(f"Number of results: {len(filtered_df)}")
 
-            # Function to truncate journal names
-            def truncate_journal_name(name, max_length=40):
-                if len(name) > max_length:
-                    return name[:max_length] + '...'
-                return name
+    #         # Function to truncate journal names
+    #         def truncate_journal_name(name, max_length=40):
+    #             if len(name) > max_length:
+    #                 return name[:max_length] + '...'
+    #             return name
 
-            # Apply truncation to the 'Journal' column
-            journal_counts['Truncated Journal'] = journal_counts['Journal'].apply(truncate_journal_name)
+    #         # Apply truncation to the 'Journal' column
+    #         journal_counts['Truncated Journal'] = journal_counts['Journal'].apply(truncate_journal_name)
 
-            # Sort by "Total Papers" in descending order and select the top 10
-            top_journals = journal_counts.sort_values(by="Total Papers", ascending=False).head(15)
+    #         # Sort by "Total Papers" in descending order and select the top 10
+    #         top_journals = journal_counts.sort_values(by="Total Papers", ascending=False).head(15)
 
-            top_journals = top_journals.sort_values(by='Total Papers', ascending=True)
+    #         top_journals = top_journals.sort_values(by='Total Papers', ascending=True)
 
-            # Horizontal bar plot
-            if not top_journals.empty:
-                fig1 = px.bar(top_journals, x='Total Papers', y='Truncated Journal', title='Total Papers Published in Each Journal',
-                            labels={'Journal': 'Journal', 'Total Papers': 'Number of Papers'}, orientation='h')
-                fig1.update_layout(width=2000, height=800)
-                st.plotly_chart(fig1)
+    #         # Horizontal bar plot
+    #         if not top_journals.empty:
+    #             fig1 = px.bar(top_journals, x='Total Papers', y='Truncated Journal', title='Total Papers Published in Each Journal',
+    #                         labels={'Journal': 'Journal', 'Total Papers': 'Number of Papers'}, orientation='h')
+    #             fig1.update_layout(width=2000, height=800)
+    #             st.plotly_chart(fig1)
                 
-                st.dataframe(journal_counts.head(50), width=1200, height=400)
-                st.write('---')
+    #             st.dataframe(journal_counts.head(50), width=1200, height=400)
+    #             st.write('---')
 
-                # Check if 'fig' is defined and is an instance of a Plotly figure
-                if fig1 is not None:
-                    # Save the figure to a PDF buffer
-                    pdf_buffer = io.BytesIO()
-                    fig1.write_image(pdf_buffer, format='pdf')
+    #             # Check if 'fig' is defined and is an instance of a Plotly figure
+    #             if fig1 is not None:
+    #                 # Save the figure to a PDF buffer
+    #                 pdf_buffer = io.BytesIO()
+    #                 fig1.write_image(pdf_buffer, format='pdf')
 
-                    # Reset the buffer position to the beginning
-                    pdf_buffer.seek(0)
+    #                 # Reset the buffer position to the beginning
+    #                 pdf_buffer.seek(0)
 
-                    # Add a button to download the figure as a PDF
-                    st.download_button(
-                        label="Download Total Papers Published in Each Journal as PDF",
-                        data=pdf_buffer,
-                        file_name="vetu_figure.pdf",
-                        mime="application/pdf",
-                        key="journal_fig1"
-                    )
+    #                 # Add a button to download the figure as a PDF
+    #                 st.download_button(
+    #                     label="Download Total Papers Published in Each Journal as PDF",
+    #                     data=pdf_buffer,
+    #                     file_name="vetu_figure.pdf",
+    #                     mime="application/pdf",
+    #                     key="journal_fig1"
+    #                 )
 
-        else:
-            st.write("No matching results found.")
-            st.write('---')
-    else:
-        st.write('Please select filters.')
+    #     else:
+    #         st.write("No matching results found.")
+    #         st.write('---')
+    # else:
+    #     st.write('Please select filters.')
 
 elif navigation == 'Forskare':
 
-    # Function to fetch data from the database
-    def fetch_data_forskare():
-        conn = create_conn()
-        query = """
-        SELECT name, citations, impactful_citations, paper_count, affiliations 
-        FROM vetu_authorimpact 
-        WHERE EXISTS (
-            SELECT 1 
-            FROM unnest(affiliations) AS aff 
-            WHERE aff LIKE '%Sweden%'
-        )
-        """
-        df = pd.read_sql_query(query, conn)
-        conn.close()
-        return df
+    from researcher import researcher_view
 
-    # Fetch data
-    df_forskare = fetch_data_forskare()
+    researcher_view()
 
-    # Rename the columns
-    df_forskare1 = df_forskare.rename(columns={
-        "name": "Author",
-        "citations": "Total Citations",
-        "impactful_citations": "Impactful Citations",
-        "paper_count": "Number of Papers",
-        "affiliations": "Affiliation"
-    })
-    # Add a unique identifier for each row
-    df_forskare1["Unique Author"] = df_forskare1["Author"] + " (" + df_forskare1.index.astype(str) + ")"
+    # # Function to fetch data from the database
+    # def fetch_data_forskare():
+    #     conn = create_conn()
+    #     query = """
+    #     SELECT name, citations, impactful_citations, paper_count, affiliations 
+    #     FROM vetu_authorimpact 
+    #     WHERE EXISTS (
+    #         SELECT 1 
+    #         FROM unnest(affiliations) AS aff 
+    #         WHERE aff LIKE '%Sweden%'
+    #     )
+    #     """
+    #     df = pd.read_sql_query(query, conn)
+    #     conn.close()
+    #     return df
+
+    # # Fetch data
+    # df_forskare = fetch_data_forskare()
+
+    # # Rename the columns
+    # df_forskare1 = df_forskare.rename(columns={
+    #     "name": "Author",
+    #     "citations": "Total Citations",
+    #     "impactful_citations": "Impactful Citations",
+    #     "paper_count": "Number of Papers",
+    #     "affiliations": "Affiliation"
+    # })
+    # # Add a unique identifier for each row
+    # df_forskare1["Unique Author"] = df_forskare1["Author"] + " (" + df_forskare1.index.astype(str) + ")"
 
 
-    df_forskare2 = df_forskare1
+    # df_forskare2 = df_forskare1
 
-    # Reset the index and drop the original index
-    df_forskare2 = df_forskare2.sort_values(by="Total Citations", ascending=False).head(50)
-    df_forskare2 = df_forskare2.reset_index(drop=True)
-    df_forskare2.index = df_forskare2.index + 1
+    # # Reset the index and drop the original index
+    # df_forskare2 = df_forskare2.sort_values(by="Total Citations", ascending=False).head(50)
+    # df_forskare2 = df_forskare2.reset_index(drop=True)
+    # df_forskare2.index = df_forskare2.index + 1
 
-    # Select relevant columns for display
-    columns_to_display = ["Author", "Total Citations", "Impactful Citations", "Number of Papers", "Affiliation"]
-    df_forskare2 = df_forskare2[columns_to_display]
+    # # Select relevant columns for display
+    # columns_to_display = ["Author", "Total Citations", "Impactful Citations", "Number of Papers", "Affiliation"]
+    # df_forskare2 = df_forskare2[columns_to_display]
 
-    # First Subtitle
-    st.subheader('Jämför forskare efter affiliation')
+    # # First Subtitle
+    # st.subheader('Jämför forskare efter affiliation')
 
-    # Create search bar
-    search_query = st.text_input("Search within data", "")
+    # # Create search bar
+    # search_query = st.text_input("Search within data", "")
 
-    # Filter the DataFrame based on the search query
+    # # Filter the DataFrame based on the search query
     
-    if search_query:
-        df_forskare_resultat = df_forskare2[df_forskare2.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
-    else:
-        df_forskare_resultat = df_forskare2
+    # if search_query:
+    #     df_forskare_resultat = df_forskare2[df_forskare2.apply(lambda row: row.astype(str).str.contains(search_query, case=False).any(), axis=1)]
+    # else:
+    #     df_forskare_resultat = df_forskare2
 
-    # Display filtered DataFrame
-    st.dataframe(df_forskare_resultat, width=1600, height=300)
+    # # Display filtered DataFrame
+    # st.dataframe(df_forskare_resultat, width=1600, height=300)
 
-    # Sort by "Total Citations" in descending order and select the top 10
-    df_forskare_resultat2 = df_forskare_resultat.sort_values(by="Total Citations", ascending=False).head(20)
+    # # Sort by "Total Citations" in descending order and select the top 10
+    # df_forskare_resultat2 = df_forskare_resultat.sort_values(by="Total Citations", ascending=False).head(20)
 
-    # Example plot (optional)
-    if not df_forskare_resultat2.empty:
-        fig1 = px.bar(df_forskare_resultat2, x='Author', y='Total Citations', title='Citations by Author',
-                    labels={'Unique Author': 'Author', 'Citations': 'Number of Citations'})
-        st.plotly_chart(fig1)
+    # # Example plot (optional)
+    # if not df_forskare_resultat2.empty:
+    #     fig1 = px.bar(df_forskare_resultat2, x='Author', y='Total Citations', title='Citations by Author',
+    #                 labels={'Unique Author': 'Author', 'Citations': 'Number of Citations'})
+    #     st.plotly_chart(fig1)
 
-        # Check if 'fig' is defined and is an instance of a Plotly figure
-        if fig1 is not None:
-            # Save the figure to a PDF buffer
-            pdf_buffer = io.BytesIO()
-            fig1.write_image(pdf_buffer, format='pdf')
+    #     # Check if 'fig' is defined and is an instance of a Plotly figure
+    #     if fig1 is not None:
+    #         # Save the figure to a PDF buffer
+    #         pdf_buffer = io.BytesIO()
+    #         fig1.write_image(pdf_buffer, format='pdf')
 
-            # Reset the buffer position to the beginning
-            pdf_buffer.seek(0)
+    #         # Reset the buffer position to the beginning
+    #         pdf_buffer.seek(0)
 
-            # Add a button to download the figure as a PDF
-            st.download_button(
-                label="Download as PDF",
-                data=pdf_buffer,
-                file_name="vetu_figure.pdf",
-                mime="application/pdf",
-                key="author_fig1"
-            )
+    #         # Add a button to download the figure as a PDF
+    #         st.download_button(
+    #             label="Download as PDF",
+    #             data=pdf_buffer,
+    #             file_name="vetu_figure.pdf",
+    #             mime="application/pdf",
+    #             key="author_fig1"
+    #         )
 
-    # Second Subtitle
-    st.write('---')
-    st.subheader('Jämför individuella forskare')
+    # # Second Subtitle
+    # st.write('---')
+    # st.subheader('Jämför individuella forskare')
 
-    # Allow users to select authors
-    selected_authors = st.multiselect('Search authors to compare:', df_forskare1['Author'].unique())
+    # # Allow users to select authors
+    # selected_authors = st.multiselect('Search authors to compare:', df_forskare1['Author'].unique())
 
-    # Filter the DataFrame based on selected authors
-    if selected_authors:
-        selected_data = df_forskare1[df_forskare1['Author'].isin(selected_authors)]
+    # # Filter the DataFrame based on selected authors
+    # if selected_authors:
+    #     selected_data = df_forskare1[df_forskare1['Author'].isin(selected_authors)]
 
-        # Plot the selected data
-        fig2 = px.bar(selected_data, x='Author', y='Total Citations', title='Total Citations by Selected Authors',
-                    labels={'Author': 'Author', 'Total Citations': 'Number of Citations'})
-        st.plotly_chart(fig2)
+    #     # Plot the selected data
+    #     fig2 = px.bar(selected_data, x='Author', y='Total Citations', title='Total Citations by Selected Authors',
+    #                 labels={'Author': 'Author', 'Total Citations': 'Number of Citations'})
+    #     st.plotly_chart(fig2)
 
-        # Check if 'fig' is defined and is an instance of a Plotly figure
-        if fig2 is not None:
-            # Save the figure to a PDF buffer
-            pdf_buffer = io.BytesIO()
-            fig2.write_image(pdf_buffer, format='pdf')
+    #     # Check if 'fig' is defined and is an instance of a Plotly figure
+    #     if fig2 is not None:
+    #         # Save the figure to a PDF buffer
+    #         pdf_buffer = io.BytesIO()
+    #         fig2.write_image(pdf_buffer, format='pdf')
 
-            # Reset the buffer position to the beginning
-            pdf_buffer.seek(0)
+    #         # Reset the buffer position to the beginning
+    #         pdf_buffer.seek(0)
 
-            # Add a button to download the figure as a PDF
-            st.download_button(
-                label="Download as PDF",
-                data=pdf_buffer,
-                file_name="vetu_figure.pdf",
-                mime="application/pdf",
-                key="author_fig2"
-            )
-    else:
-        st.write("No authors selected.")
+    #         # Add a button to download the figure as a PDF
+    #         st.download_button(
+    #             label="Download as PDF",
+    #             data=pdf_buffer,
+    #             file_name="vetu_figure.pdf",
+    #             mime="application/pdf",
+    #             key="author_fig2"
+    #         )
+    # else:
+    #     st.write("No authors selected.")
 
-    #Third subtitle
-    st.write('---')
-    st.subheader('Topplista efter antal citat')
+    # #Third subtitle
+    # st.write('---')
+    # st.subheader('Topplista efter antal citat')
 
-    # Reset the index and drop the original index
-    df_topplista = df_forskare1.sort_values(by="Total Citations", ascending=False).head(200)
-    df_topplista = df_topplista.reset_index(drop=True)
-    df_topplista.index = df_topplista.index + 1
+    # # Reset the index and drop the original index
+    # df_topplista = df_forskare1.sort_values(by="Total Citations", ascending=False).head(200)
+    # df_topplista = df_topplista.reset_index(drop=True)
+    # df_topplista.index = df_topplista.index + 1
 
-    # Show topplista
-    # Select relevant columns for display
-    columns_to_display = ["Author", "Total Citations", "Impactful Citations", "Number of Papers", "Affiliation"]
-    df_topplista = df_topplista[columns_to_display]
+    # # Show topplista
+    # # Select relevant columns for display
+    # columns_to_display = ["Author", "Total Citations", "Impactful Citations", "Number of Papers", "Affiliation"]
+    # df_topplista = df_topplista[columns_to_display]
 
-    # Display filtered DataFrame
-    st.dataframe(df_topplista, width=1600, height=1600)
+    # # Display filtered DataFrame
+    # st.dataframe(df_topplista, width=1600, height=1600)
 
 
-    # Create an empty portion of the page
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
-    st.write('  ')
+    # # Create an empty portion of the page
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
+    # st.write('  ')
   
 elif navigation == 'Finansiärer':
-    st.write('Funktionen kommer snart')
+    
+    from funding import funding_view
+
+    funding_view()
 
 elif navigation == 'Innovation':
-    st.write('Funktionen kommer snart')
+    
+    from innovation import innovation_view
+
+    innovation_view()
 
 elif navigation == 'Sök Artiklar':
 
-    from pandas.api.types import is_categorical_dtype, is_datetime64_any_dtype, is_numeric_dtype, is_object_dtype
+    from search import search_view
 
-    # Fetch data with filters applied in the SQL query
-    def fetch_author_paper_data(filters):
+    search_view()
 
-        # Start with the base query
-        query = """
-            SELECT title, publication_type, abstract_text, journal_title, affiliations, pmid 
-            FROM vetu_paper
-        """
+    # from pandas.api.types import is_categorical_dtype, is_datetime64_any_dtype, is_numeric_dtype, is_object_dtype
 
-        # Dynamically add WHERE clauses based on the filters
-        conditions = []
-        if filters.get("Type of paper"):
-            type_conditions = " OR ".join([f"publication_type = '{type_}'" for type_ in filters['Type of paper']])
-            conditions.append(f"({type_conditions})")
+    # # Fetch data with filters applied in the SQL query
+    # def fetch_author_paper_data(filters):
+
+    #     # Start with the base query
+    #     query = """
+    #         SELECT title, publication_type, abstract_text, journal_title, affiliations, pmid 
+    #         FROM vetu_paper
+    #     """
+
+    #     # Dynamically add WHERE clauses based on the filters
+    #     conditions = []
+    #     if filters.get("Type of paper"):
+    #         type_conditions = " OR ".join([f"publication_type = '{type_}'" for type_ in filters['Type of paper']])
+    #         conditions.append(f"({type_conditions})")
         
-        if filters.get("Title"):
-            conditions.append(f"title ILIKE '%{filters['Title']}%'")
+    #     if filters.get("Title"):
+    #         conditions.append(f"title ILIKE '%{filters['Title']}%'")
         
-        if filters.get("Topic"):
-            if filters.get("Specialty") and filters['Specialty'] != "All":
-                conditions.append(f"topic_codes ILIKE '%{filters['Specialty']}%'")
-            else:
-                conditions.append(f"topic_codes ILIKE '%{filters['Topic']}%'")
+    #     if filters.get("Topic"):
+    #         if filters.get("Specialty") and filters['Specialty'] != "All":
+    #             conditions.append(f"topic_codes ILIKE '%{filters['Specialty']}%'")
+    #         else:
+    #             conditions.append(f"topic_codes ILIKE '%{filters['Topic']}%'")
         
-        if filters.get("Journal"):
-            conditions.append(f"journal_title ILIKE '%{filters['Journal']}%'")
+    #     if filters.get("Journal"):
+    #         conditions.append(f"journal_title ILIKE '%{filters['Journal']}%'")
         
-        if filters.get("Affiliation"):
-            conditions.append(f"affiliations ILIKE '%{filters['Affiliation']}%'")
+    #     if filters.get("Affiliation"):
+    #         conditions.append(f"affiliations ILIKE '%{filters['Affiliation']}%'")
 
-        # Add conditions to the query if any
-        if conditions:
-            query += " WHERE " + " AND ".join(conditions)
+    #     # Add conditions to the query if any
+    #     if conditions:
+    #         query += " WHERE " + " AND ".join(conditions)
 
-        conn = create_conn()
-        df = pd.read_sql_query(query, conn)
-        conn.close()
+    #     conn = create_conn()
+    #     df = pd.read_sql_query(query, conn)
+    #     conn.close()
 
-        # Rename columns
-        df.rename(columns={
-            'title': 'Title',
-            'publication_type': 'Type of paper',
-            'abstract_text': 'Topic',
-            'journal_title': 'Journal',
-            'affiliations': 'Affiliation',
-            'pmid': 'PmID'
-        }, inplace=True)
+    #     # Rename columns
+    #     df.rename(columns={
+    #         'title': 'Title',
+    #         'publication_type': 'Type of paper',
+    #         'abstract_text': 'Topic',
+    #         'journal_title': 'Journal',
+    #         'affiliations': 'Affiliation',
+    #         'pmid': 'PmID'
+    #     }, inplace=True)
 
-        return df
+    #     return df
 
-    # UI for filtering
-    def filter_dataframe() -> dict:
-        filters = {}
-        with st.container():
-            to_filter_columns = st.multiselect("Filter articles based on", ["Type of paper", "Title", "Topic", "Journal", "Affiliation"])
+    # # UI for filtering
+    # def filter_dataframe() -> dict:
+    #     filters = {}
+    #     with st.container():
+    #         to_filter_columns = st.multiselect("Filter articles based on", ["Type of paper", "Title", "Topic", "Journal", "Affiliation"])
             
-            for column in to_filter_columns:
-                left, right = st.columns((1, 20))
-                if column == "Type of paper":
-                    user_type_input = right.multiselect(
-                        f"Select {column}",
-                        options=["Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
-                    )
-                    if user_type_input:
-                        filters[column] = user_type_input
-                elif column == "Topic":
+    #         for column in to_filter_columns:
+    #             left, right = st.columns((1, 20))
+    #             if column == "Type of paper":
+    #                 user_type_input = right.multiselect(
+    #                     f"Select {column}",
+    #                     options=["Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
+    #                 )
+    #                 if user_type_input:
+    #                     filters[column] = user_type_input
+    #             elif column == "Topic":
 
-                    selected_major_area = right.selectbox("Select Major Area", major_areas)
+    #                 selected_major_area = right.selectbox("Select Major Area", major_areas)
 
-                    if selected_major_area != "All":
-                        major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
-                        filters["Topic"] = major_code
-                        filtered_specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.startswith(major_code)) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'])
-                        filtered_specialties.insert(0, "All")
+    #                 if selected_major_area != "All":
+    #                     major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
+    #                     filters["Topic"] = major_code
+    #                     filtered_specialties = sorted(topic_codes_df[(topic_codes_df['Code'].str.startswith(major_code)) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'])
+    #                     filtered_specialties.insert(0, "All")
 
-                        selected_specialty = right.selectbox("Select Specialty", filtered_specialties)
-                        if selected_specialty != "All":
-                            specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
-                            filters["Specialty"] = specialty_code
-                        else:
-                            filters['Specialty'] = "All"
-                    else:
-                        filters['Specialty'] = "All"
-                else:
-                    user_text_input = right.text_input(
-                        f"Filter for {column} containing:",
-                    )
-                    if user_text_input:
-                        filters[column] = user_text_input
+    #                     selected_specialty = right.selectbox("Select Specialty", filtered_specialties)
+    #                     if selected_specialty != "All":
+    #                         specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
+    #                         filters["Specialty"] = specialty_code
+    #                     else:
+    #                         filters['Specialty'] = "All"
+    #                 else:
+    #                     filters['Specialty'] = "All"
+    #             else:
+    #                 user_text_input = right.text_input(
+    #                     f"Filter for {column} containing:",
+    #                 )
+    #                 if user_text_input:
+    #                     filters[column] = user_text_input
         
-        return filters
+    #     return filters
 
-    # Filter parameters
-    filters = filter_dataframe()
+    # # Filter parameters
+    # filters = filter_dataframe()
 
-    search_button = st.button('Search')
+    # search_button = st.button('Search')
 
-    st.write('---')
+    # st.write('---')
 
-    # Display matching results
-    if search_button:
-        # Fetch data based on filters
-        author_paper_df = fetch_author_paper_data(filters)
-        if not author_paper_df.empty:
-            st.text(f"{len(author_paper_df)} results")
-            top_50_df = author_paper_df.head(50)
-            for index, row in top_50_df.iterrows():
-                st.markdown(f"**Type of paper:** {row['Type of paper']}")
-                st.markdown(f"**Title:** {row['Title']}")
-                st.markdown(f"**Topic:** {row['Topic']}")
-                st.markdown(f"**Journal:** {row['Journal']}")
-                st.markdown(f"**Affiliation:** {row['Affiliation']}")
-                pubmed_link = f"https://pubmed.ncbi.nlm.nih.gov/{row['PmID']}/"
-                st.markdown(f"[Link to PubMed]({pubmed_link})")
-                st.markdown("---")
-        else:
-            st.write("No matching results found.")
+    # # Display matching results
+    # if search_button:
+    #     # Fetch data based on filters
+    #     author_paper_df = fetch_author_paper_data(filters)
+    #     if not author_paper_df.empty:
+    #         st.text(f"{len(author_paper_df)} results")
+    #         top_50_df = author_paper_df.head(50)
+    #         for index, row in top_50_df.iterrows():
+    #             st.markdown(f"**Type of paper:** {row['Type of paper']}")
+    #             st.markdown(f"**Title:** {row['Title']}")
+    #             st.markdown(f"**Topic:** {row['Topic']}")
+    #             st.markdown(f"**Journal:** {row['Journal']}")
+    #             st.markdown(f"**Affiliation:** {row['Affiliation']}")
+    #             pubmed_link = f"https://pubmed.ncbi.nlm.nih.gov/{row['PmID']}/"
+    #             st.markdown(f"[Link to PubMed]({pubmed_link})")
+    #             st.markdown("---")
+    #     else:
+    #         st.write("No matching results found.")
 
 
