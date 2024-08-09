@@ -421,6 +421,11 @@ elif navigation == 'Akademi & Högskola':
             conditions.append(f"({' OR '.join(topic_conditions)})")
         if type_filter != "":
             conditions.append(f"publication_type LIKE '%{type_filter}%'")
+        if major_code != "All":
+            if specialty_code == "All":
+                conditions.append(f"topic_codes ILIKE '%{major_code}%'")
+            else:
+                conditions.append(f"topic_codes ILIKE '%{specialty_code}%'")
         conditions.append(f"year >= {from_year}")
         conditions.append(f"year <= {to_year}")
 
@@ -447,9 +452,10 @@ elif navigation == 'Akademi & Högskola':
         # Arrange dropdown menus in columns
         col1, col2 = st.columns(2)
         col3, col4 = st.columns(2)
-        col5, col6, col7 = st.columns(3)
-        col8, col9 = st.columns(2)
-        col10, col11, col12 = st.columns(3)
+        col5, col6 = st.columns(2)
+        col7, col8, col9 = st.columns(3)
+        col10, col11 = st.columns(2)
+        col12, col13, col14 = st.columns(3)
 
         # Other dropdown menus
         with col1:
@@ -481,18 +487,40 @@ elif navigation == 'Akademi & Högskola':
                         title_filter = user_title_input
                     else:
                         title_filter = ""
+                with col5:
+                    selected_major_area = st.selectbox("Select Major Area", major_areas)
+
+                with col6:
+                    if selected_major_area == "All":
+                        selected_specialty = st.selectbox("Select Specialty", ["All"])
+                        major_code = "All"
+                        specialty_code = "All"
+                    else:
+                        # Filter specialties based on selected major area
+                        major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
+                        filtered_specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.startswith(major_code) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
+                        filtered_specialties.insert(0, "All")
+                        selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
+                        if selected_specialty == "All":
+                            specialty_code = "All"
+                        elif not topic_codes_df[topic_codes_df['Swedish'] == selected_specialty].empty:
+                            specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
+                        else:
+                            specialty_code = ""
             else: 
                 type_filter = ""
                 title_filter = ""
+                major_code = "All"
+                specialty_code = "All"
 
-        with col5:
+        with col7:
             selected_university = st.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
             if selected_university != "All":
                 selected_university_code = universities2[universities2['Department'] == selected_university]['Code'].values[0]
             else:
                 selected_university_code = ""
 
-        with col6:
+        with col8:
             if selected_university == "ALL":
                 st.selectbox('Institut:', ["All"])
             else:
@@ -505,7 +533,7 @@ elif navigation == 'Akademi & Högskola':
                 else:
                     selected_institute_code = ""
 
-        with col7:    
+        with col9:    
             if selected_institute == "ALL":
                 st.selectbox('Department:', ["All"])
             else:
@@ -514,17 +542,17 @@ elif navigation == 'Akademi & Högskola':
                     (universities2['Code'].str.startswith(selected_institute_code + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
                 ) # Avdelning
 
-        with col8:
+        with col10:
             jamfor_box = st.checkbox('Jämför')
             if jamfor_box:
-                with col10:
+                with col12:
                     selected_university_comp = st.selectbox('Jämför med Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
                     if selected_university_comp != "All":
                         selected_university_code_comp = universities2[universities2['Department'] == selected_university_comp]['Code'].values[0]
                     else:
                         selected_university_code_comp = ""
 
-                with col11:
+                with col13:
                     if selected_university_comp == "ALL":
                         st.selectbox('Institut:', ["All"])
                     else:
@@ -537,7 +565,7 @@ elif navigation == 'Akademi & Högskola':
                         else:
                             selected_institute_code_comp = ""
 
-                with col12:    
+                with col14:    
                     if selected_institute_comp == "ALL":
                         st.selectbox('Department:', ["All"])
                     else:
@@ -554,7 +582,7 @@ elif navigation == 'Akademi & Högskola':
                 selected_department_comp = ""
                 data2 = pd.DataFrame()
         
-        with col9:
+        with col11:
             pass          
 
 
@@ -1080,19 +1108,6 @@ elif navigation == 'Tidsskrifter':
                         default=list(df[column].unique()),
                     )
                     df = df[df[column].isin(user_cat_input)]
-
-                # elif is_numeric_dtype(df[column]):
-                #     _min = float(df[column].min())
-                #     _max = float(df[column].max())
-                #     step = (_max - _min) / 100
-                #     user_num_input = right.slider(
-                #         f"Values for {column}",
-                #         min_value=_min,
-                #         max_value=_max,
-                #         value=(_min, _max),
-                #         step=step,
-                #     )
-                #     df = df[df[column].between(*user_num_input)]
 
                 else:
                     user_text_input = right.text_input(
