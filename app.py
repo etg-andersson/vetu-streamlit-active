@@ -1360,19 +1360,43 @@ elif navigation == 'Innovation':
 
 elif navigation == 'Sök Artiklar':
 
-    from pandas.api.types import (
-    is_categorical_dtype,
-    is_datetime64_any_dtype,
-    is_numeric_dtype,
-    is_object_dtype,
-    )
-    #import sqlite3
+    from pandas.api.types import is_categorical_dtype, is_datetime64_any_dtype, is_numeric_dtype, is_object_dtype
 
-    def fetch_author_paper_data():
+    # Fetch data with filters applied in the SQL query
+    def fetch_author_paper_data(filters):
+
+        # Start with the base query
+        query = """
+            SELECT title, publication_type, abstract_text, journal_title, affiliations, pmid 
+            FROM vetu_paper
+        """
+
+        # Dynamically add WHERE clauses based on the filters
+        conditions = []
+        if filters.get("Type of paper"):
+            type_conditions = " OR ".join([f"publication_type = '{type_}'" for type_ in filters['Type of paper']])
+            conditions.append(f"({type_conditions})")
+        
+        if filters.get("Title"):
+            conditions.append(f"title ILIKE '%{filters['Title']}%'")
+        
+        if filters.get("Topic"):
+            conditions.append(f"abstract_text ILIKE '%{filters['Topic']}%'")
+        
+        if filters.get("Journal"):
+            conditions.append(f"journal_title ILIKE '%{filters['Journal']}%'")
+        
+        if filters.get("Affiliation"):
+            conditions.append(f"affiliations ILIKE '%{filters['Affiliation']}%'")
+
+        # Add conditions to the query if any
+        if conditions:
+            query += " WHERE " + " AND ".join(conditions)
+
         conn = create_conn()
-        query = "SELECT title, publication_type, abstract_text, journal_title, affiliations, pmid FROM vetu_paper"
         df = pd.read_sql_query(query, conn)
         conn.close()
+
         # Rename columns
         df.rename(columns={
             'title': 'Title',
@@ -1381,45 +1405,41 @@ elif navigation == 'Sök Artiklar':
             'journal_title': 'Journal',
             'affiliations': 'Affiliation',
             'pmid': 'PmID'
-            
         }, inplace=True)
+
         return df
 
-    def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-        df = df.copy()
-        for col in df.columns:
-            if is_object_dtype(df[col]):
-                try:
-                    df[col] = pd.to_datetime(df[col])
-                except Exception:
-                    pass
-            if is_datetime64_any_dtype(df[col]):
-                df[col] = df[col].dt.tz_localize(None)
-        
-        modification_container = st.container()
-        with modification_container:
-            to_filter_columns = st.multiselect("Filter articles based on", df.columns)
+    # UI for filtering
+    def filter_dataframe() -> dict:
+        filters = {}
+        with st.container():
+            to_filter_columns = st.multiselect("Filter articles based on", ["Type of paper", "Title", "Topic", "Journal", "Affiliation"])
+            
             for column in to_filter_columns:
-                left, right = st.columns((1, 20))
                 if column == "Type of paper":
-                    user_type_input = right.selectbox(
+                    user_type_input = st.multiselect(
                         f"Select {column}",
-                        options=df[column].unique(),
+                        options=["Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
                     )
-                    df = df[df[column] == user_type_input]
+                    if user_type_input:
+                        filters[column] = user_type_input
                 else:
-                    user_text_input = right.text_input(
+                    user_text_input = st.text_input(
                         f"Filter for {column} containing:",
                     )
                     if user_text_input:
-                        df = df[df[column].astype(str).str.contains(user_text_input, case=False)]
-        return df
+                        filters[column] = user_text_input
+        
+        return filters
 
-    # Fetch data
-    author_paper_df = fetch_author_paper_data()
+    # Main Streamlit app
+    st.header("Author Paper Search")
 
-    # Filter the DataFrame
-    filtered_df = filter_dataframe(author_paper_df)
+    # Filter parameters
+    filters = filter_dataframe()
+
+    # Fetch data based on filters
+    author_paper_df = fetch_author_paper_data(filters)
 
     search_button = st.button('Search')
 
@@ -1427,9 +1447,9 @@ elif navigation == 'Sök Artiklar':
 
     # Display matching results
     if search_button:
-        if not filtered_df.empty:
-            st.text(f"{len(filtered_df)} results")
-            top_50_df = filtered_df.head(50)
+        if not author_paper_df.empty:
+            st.text(f"{len(author_paper_df)} results")
+            top_50_df = author_paper_df.head(50)
             for index, row in top_50_df.iterrows():
                 st.markdown(f"**Type of paper:** {row['Type of paper']}")
                 st.markdown(f"**Title:** {row['Title']}")
