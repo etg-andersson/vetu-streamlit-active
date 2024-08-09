@@ -4,12 +4,10 @@ def university_view():
     import streamlit as st
     import pandas as pd
     import psycopg2
-    import matplotlib.pyplot as plt
     import plotly.express as px
     from supabase import create_client, Client
     import plotly.io as pio
     import io
-    from pathlib import Path
 
     pio.templates.default = "ggplot2"
 
