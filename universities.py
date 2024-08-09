@@ -10,6 +10,20 @@ def university_view():
     import io
     from pathlib import Path
 
+    # Accessing Supabase secrets
+    secrets = st.secrets["supabase"]
+
+    # Function to create a connection to the PostgreSQL database
+    def create_conn():
+        conn = psycopg2.connect(
+            host=secrets["host_hidden"],
+            dbname=secrets["db_hidden"],
+            user=secrets["user_hidden"],
+            password=secrets["password_hidden"],
+            port=secrets["port_hidden"]
+        )
+        return conn
+
     # Construct file paths using Pathlib
     file_path_university = 'affiliations_university_norm.csv'
     file_path_university2 = 'affiliations_university_decoder_list.csv'
