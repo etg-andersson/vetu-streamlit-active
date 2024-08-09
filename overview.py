@@ -69,7 +69,7 @@ def fetch_overview_data():
 
     return total_citations, total_papers, total_authors, percentage_papers_cited_more_than_10, percentage_papers_cited_6_through_10, percentage_papers_cited_5_or_less, citation_df, impact_df
 
-def fetch_papers_per_year():
+def plot_papers_per_year():
     conn = create_conn()
     query = "SELECT year FROM vetu_paper"
     df = pd.read_sql_query(query, conn)
@@ -82,8 +82,6 @@ def fetch_papers_per_year():
     
     return papers_per_year
 
-def bar_plot_total_papers_per_year(papers_per_year):
-    # Plot the bar chart for total papers published each year
     fig = px.bar(
         papers_per_year, 
         x='Year', 
