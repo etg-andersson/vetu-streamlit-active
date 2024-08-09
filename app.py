@@ -1147,7 +1147,6 @@ elif navigation == 'Tidsskrifter':
 
             # Display the grouped DataFrame
             st.write(f"Number of results: {len(filtered_df)}")
-            st.dataframe(journal_counts.head(50), width=1200, height=400)
 
             # Function to truncate journal names
             def truncate_journal_name(name, max_length=40):
@@ -1188,6 +1187,8 @@ elif navigation == 'Tidsskrifter':
                         mime="application/pdf",
                         key="journal_fig1"
                     )
+                
+                st.dataframe(journal_counts.head(50), width=1200, height=400)
 
         else:
             st.write("No matching results found.")
