@@ -111,7 +111,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Set the default template for Plotly
-pio.templates.default = "ggplot2"
+# pio.templates.default = "ggplot2"
 
 # # Construct file paths using Pathlib
 # file_path_university = 'affiliations_university_norm.csv'

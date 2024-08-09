@@ -11,6 +11,8 @@ def innovation_view():
     import io
     from pathlib import Path
 
+    pio.templates.default = "ggplot2"
+
     # Accessing Supabase secrets
     secrets = st.secrets["supabase"]
 

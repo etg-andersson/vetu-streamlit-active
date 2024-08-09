@@ -1,6 +1,6 @@
 ## Översikt
 def overview_view():
-    
+
     import streamlit as st
     import pandas as pd
     import psycopg2
@@ -10,6 +10,8 @@ def overview_view():
     import plotly.io as pio
     import io
     from pathlib import Path
+
+    pio.templates.default = "ggplot2"
 
     # Accessing Supabase secrets
     secrets = st.secrets["supabase"]

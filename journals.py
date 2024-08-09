@@ -1,7 +1,7 @@
 ### Journal
 
 def journal_view():
-    
+
     import streamlit as st
     import pandas as pd
     import psycopg2
@@ -11,6 +11,8 @@ def journal_view():
     import plotly.io as pio
     import io
     from pathlib import Path
+
+    pio.templates.default = "ggplot2"
 
     # Accessing Supabase secrets
     secrets = st.secrets["supabase"]

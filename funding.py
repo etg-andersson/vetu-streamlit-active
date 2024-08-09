@@ -11,6 +11,8 @@ def funding_view():
     import io
     from pathlib import Path
 
+    pio.templates.default = "ggplot2"
+
     # Accessing Supabase secrets
     secrets = st.secrets["supabase"]
 
@@ -56,5 +58,5 @@ def funding_view():
     # Add "All" option to the dropdowns
     major_areas.insert(0, "All")
     specialties.insert(0, "All")
-    
+
     st.write('Funktionen kommer snart')
