@@ -1162,12 +1162,14 @@ elif navigation == 'Tidsskrifter':
 
             top_journals = top_journals.sort_values(by='Total Papers', ascending=True)
 
-            # Example plot (optional)
+            # Horizontal bar plot
             if not top_journals.empty:
                 fig1 = px.bar(top_journals, x='Total Papers', y='Truncated Journal', title='Total Papers Published in Each Journal',
                             labels={'Journal': 'Journal', 'Total Papers': 'Number of Papers'}, orientation='h')
                 fig1.update_layout(width=2000, height=800)
                 st.plotly_chart(fig1)
+                
+                st.dataframe(journal_counts.head(50), width=1200, height=400)
                 st.write('---')
 
                 # Check if 'fig' is defined and is an instance of a Plotly figure
@@ -1181,14 +1183,12 @@ elif navigation == 'Tidsskrifter':
 
                     # Add a button to download the figure as a PDF
                     st.download_button(
-                        label="Download as PDF",
+                        label="Download Total Papers Published in Journals as PDF",
                         data=pdf_buffer,
                         file_name="vetu_figure.pdf",
                         mime="application/pdf",
                         key="journal_fig1"
                     )
-                
-                st.dataframe(journal_counts.head(50), width=1200, height=400)
 
         else:
             st.write("No matching results found.")
