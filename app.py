@@ -693,6 +693,10 @@ elif navigation == 'Akademi & Högskola':
 
     search_button = st.button("Search")
 
+    fig1 = None
+    fig2 = None
+    fig3 = None
+
     if search_button:
         # Fetch the data
         data = fetch_data(selected_university, selected_institute, selected_department, title_filter, type_filter, fran_ar, till_ar)
