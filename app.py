@@ -1432,14 +1432,8 @@ elif navigation == 'Sök Artiklar':
         
         return filters
 
-    # Main Streamlit app
-    st.header("Author Paper Search")
-
     # Filter parameters
     filters = filter_dataframe()
-
-    # Fetch data based on filters
-    author_paper_df = fetch_author_paper_data(filters)
 
     search_button = st.button('Search')
 
@@ -1447,6 +1441,8 @@ elif navigation == 'Sök Artiklar':
 
     # Display matching results
     if search_button:
+        # Fetch data based on filters
+        author_paper_df = fetch_author_paper_data(filters)
         if not author_paper_df.empty:
             st.text(f"{len(author_paper_df)} results")
             top_50_df = author_paper_df.head(50)
