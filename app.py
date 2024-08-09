@@ -1163,7 +1163,7 @@ elif navigation == 'Tidsskrifter':
 
             # Example plot (optional)
             if not top_journals.empty:
-                fig1 = px.bar(top_journals, x='Truncated Journal', y='Total Papers', title='Total Papers Published in Each Journal',
+                fig1 = px.bar(top_journals, x='Total Papers', y='Truncated Journal', title='Total Papers Published in Each Journal',
                             labels={'Journal': 'Journal', 'Total Papers': 'Number of Papers'}, orientation='h')
                 fig1.update_layout(width=2000, height=800)
                 st.plotly_chart(fig1)
@@ -1192,19 +1192,6 @@ elif navigation == 'Tidsskrifter':
             st.write('---')
     else:
         st.write('Please select filters.')
-
-
-    # st.write("---")
-    # st.subheader('Top journals overall')
-    # st.write(' ')
-
-    # # Group by journal and count the number of papers
-    # df_counts = df['Journal'].value_counts().reset_index()
-    # df_counts.index = df_counts.index + 1
-    # df_counts.columns = ['Journal', 'Total Papers']
-
-    # # Apply truncation to the 'Journal' column
-    # st.dataframe(df_counts, width=1200, height=800)
 
 elif navigation == 'Forskare':
 
