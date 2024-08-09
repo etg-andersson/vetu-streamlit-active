@@ -443,147 +443,146 @@ elif navigation == 'Akademi & Högskola':
         conn.close()
         return df
 
-    # Create a box containing four dropdown menus
-    with st.container():
-        # Generate a list of years from 1990 to 2024
-        fran_ar_list = list(range(1990, 2025))
-        fran_ar = 1990
+    
+    # Generate a list of years from 1990 to 2024
+    fran_ar_list = list(range(1990, 2025))
+    fran_ar = 1990
 
-        # Arrange dropdown menus in columns
-        col1, col2 = st.columns(2)
-        col3, col4 = st.columns(2)
-        col5, col6 = st.columns(2)
-        col7, col8, col9 = st.columns(3)
-        col10, col11 = st.columns(2)
-        col12, col13, col14 = st.columns(3)
+    # Arrange dropdown menus in columns
+    col1, col2 = st.columns(2)
+    col3, col4 = st.columns(2)
+    col5, col6 = st.columns(2)
+    col7, col8, col9 = st.columns(3)
+    col10, col11 = st.columns(2)
+    col12, col13, col14 = st.columns(3)
 
-        # Other dropdown menus
-        with col1:
-            year_range = st.slider('År:', min_value=1990, max_value=2024, value=(1990, 2024)) # År slider
-            fran_ar, till_ar = year_range
+    # Other dropdown menus
+    with col1:
+        year_range = st.slider('År:', min_value=1990, max_value=2024, value=(1990, 2024)) # År slider
+        fran_ar, till_ar = year_range
 
-        with col2:
-            st.write("")
-            st.write("")
-            ytterliggare_filter = st.checkbox('Lägg till fler filter:')
-            if ytterliggare_filter:
-                with col3:
-                    user_type_input = st.selectbox(
-                        f"Select article type",
-                        options=["All", "Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
-                    )
-                    if user_type_input:
-                        if user_type_input == "All":
-                            type_filter = ""
-                        else:
-                            type_filter = user_type_input
-                    else:
+    with col2:
+        st.write("")
+        st.write("")
+        ytterliggare_filter = st.checkbox('Lägg till fler filter:')
+        if ytterliggare_filter:
+            with col3:
+                user_type_input = st.selectbox(
+                    f"Select article type",
+                    options=["All", "Case Reports", "Journal Article", "Clinical Trial", "Evaluation Study", "Randomized Controlled Trial", "Observational Study", "Systematic Review", "Meta-Analysis"],
+                )
+                if user_type_input:
+                    if user_type_input == "All":
                         type_filter = ""
-                with col4:
-                    user_title_input = st.text_input(
-                        f"Filter for Title containing:",
-                    )
-                    if user_title_input:
-                        title_filter = user_title_input
                     else:
-                        title_filter = ""
-                with col5:
-                    selected_major_area = st.selectbox("Select Major Area", major_areas)
-
-                with col6:
-                    if selected_major_area == "All":
-                        selected_specialty = st.selectbox("Select Specialty", ["All"])
-                        major_code = "All"
-                        specialty_code = "All"
-                    else:
-                        # Filter specialties based on selected major area
-                        major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
-                        filtered_specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.startswith(major_code) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
-                        filtered_specialties.insert(0, "All")
-                        selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
-                        if selected_specialty == "All":
-                            specialty_code = "All"
-                        elif not topic_codes_df[topic_codes_df['Swedish'] == selected_specialty].empty:
-                            specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
-                        else:
-                            specialty_code = ""
-            else: 
-                type_filter = ""
-                title_filter = ""
-                major_code = "All"
-                specialty_code = "All"
-
-        with col7:
-            selected_university = st.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
-            if selected_university != "All":
-                selected_university_code = universities2[universities2['Department'] == selected_university]['Code'].values[0]
-            else:
-                selected_university_code = ""
-
-        with col8:
-            if selected_university == "ALL":
-                st.selectbox('Institut:', ["All"])
-            else:
-                selected_institute = st.selectbox('Institut:',
-                ["All"] + universities2[
-                    (universities2['Code'].str.startswith(selected_university_code + '.')) & (universities2['Code'].str.count('\.')== 1)]['Department'].tolist(), index=0
-                ) # Institut
-                if selected_institute != "All":
-                    selected_institute_code = universities2[universities2['Department'] == selected_institute]['Code'].values[0]
+                        type_filter = user_type_input
                 else:
-                    selected_institute_code = ""
+                    type_filter = ""
+            with col4:
+                user_title_input = st.text_input(
+                    f"Filter for Title containing:",
+                )
+                if user_title_input:
+                    title_filter = user_title_input
+                else:
+                    title_filter = ""
+            with col5:
+                selected_major_area = st.selectbox("Select Major Area", major_areas)
 
-        with col9:    
-            if selected_institute == "ALL":
-                st.selectbox('Department:', ["All"])
+            with col6:
+                if selected_major_area == "All":
+                    selected_specialty = st.selectbox("Select Specialty", ["All"])
+                    major_code = "All"
+                    specialty_code = "All"
+                else:
+                    # Filter specialties based on selected major area
+                    major_code = topic_codes_df[topic_codes_df['Swedish'] == selected_major_area]['Code'].values[0]
+                    filtered_specialties = sorted(topic_codes_df[topic_codes_df['Code'].str.startswith(major_code) & (topic_codes_df['Code'].str.len() == 5)]['Swedish'].unique())
+                    filtered_specialties.insert(0, "All")
+                    selected_specialty = st.selectbox("Select Specialty", filtered_specialties)
+                    if selected_specialty == "All":
+                        specialty_code = "All"
+                    elif not topic_codes_df[topic_codes_df['Swedish'] == selected_specialty].empty:
+                        specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
+                    else:
+                        specialty_code = ""
+        else: 
+            type_filter = ""
+            title_filter = ""
+            major_code = "All"
+            specialty_code = "All"
+
+    with col7:
+        selected_university = st.selectbox('Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
+        if selected_university != "All":
+            selected_university_code = universities2[universities2['Department'] == selected_university]['Code'].values[0]
+        else:
+            selected_university_code = ""
+
+    with col8:
+        if selected_university == "ALL":
+            st.selectbox('Institut:', ["All"])
+        else:
+            selected_institute = st.selectbox('Institut:',
+            ["All"] + universities2[
+                (universities2['Code'].str.startswith(selected_university_code + '.')) & (universities2['Code'].str.count('\.')== 1)]['Department'].tolist(), index=0
+            ) # Institut
+            if selected_institute != "All":
+                selected_institute_code = universities2[universities2['Department'] == selected_institute]['Code'].values[0]
             else:
-                selected_department = st.selectbox('Department:', 
-                ["All"] + universities2[
-                    (universities2['Code'].str.startswith(selected_institute_code + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
-                ) # Avdelning
+                selected_institute_code = ""
 
-        with col10:
-            jamfor_box = st.checkbox('Jämför')
-            if jamfor_box:
-                with col12:
-                    selected_university_comp = st.selectbox('Jämför med Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
-                    if selected_university_comp != "All":
-                        selected_university_code_comp = universities2[universities2['Department'] == selected_university_comp]['Code'].values[0]
+    with col9:    
+        if selected_institute == "ALL":
+            st.selectbox('Department:', ["All"])
+        else:
+            selected_department = st.selectbox('Department:', 
+            ["All"] + universities2[
+                (universities2['Code'].str.startswith(selected_institute_code + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
+            ) # Avdelning
+
+    with col10:
+        jamfor_box = st.checkbox('Jämför')
+        if jamfor_box:
+            with col12:
+                selected_university_comp = st.selectbox('Jämför med Universitet:', ["All"] + universities2[universities2['Code'].str.count('\.') == 0]['Department'].tolist(), index=0) # Universitet
+                if selected_university_comp != "All":
+                    selected_university_code_comp = universities2[universities2['Department'] == selected_university_comp]['Code'].values[0]
+                else:
+                    selected_university_code_comp = ""
+
+            with col13:
+                if selected_university_comp == "ALL":
+                    st.selectbox('Institut:', ["All"])
+                else:
+                    selected_institute_comp = st.selectbox('Jämför med Institut:',
+                    ["All"] + universities2[
+                        (universities2['Code'].str.startswith(selected_university_code_comp + '.')) & (universities2['Code'].str.count('\.')== 1)]['Department'].tolist(), index=0
+                    ) # Institut
+                    if selected_institute_comp != "All":
+                        selected_institute_code_comp = universities2[universities2['Department'] == selected_institute_comp]['Code'].values[0]
                     else:
-                        selected_university_code_comp = ""
+                        selected_institute_code_comp = ""
 
-                with col13:
-                    if selected_university_comp == "ALL":
-                        st.selectbox('Institut:', ["All"])
-                    else:
-                        selected_institute_comp = st.selectbox('Jämför med Institut:',
-                        ["All"] + universities2[
-                            (universities2['Code'].str.startswith(selected_university_code_comp + '.')) & (universities2['Code'].str.count('\.')== 1)]['Department'].tolist(), index=0
-                        ) # Institut
-                        if selected_institute_comp != "All":
-                            selected_institute_code_comp = universities2[universities2['Department'] == selected_institute_comp]['Code'].values[0]
-                        else:
-                            selected_institute_code_comp = ""
+            with col14:    
+                if selected_institute_comp == "ALL":
+                    st.selectbox('Department:', ["All"])
+                else:
+                    selected_department_comp = st.selectbox('Jämför med Department:', 
+                    ["All"] + universities2[
+                        (universities2['Code'].str.startswith(selected_institute_code_comp + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
+                    ) # Avdelning
+            
+            data2 = fetch_data(selected_university_comp, selected_institute_comp, selected_department_comp, title_filter, type_filter, fran_ar, till_ar)
 
-                with col14:    
-                    if selected_institute_comp == "ALL":
-                        st.selectbox('Department:', ["All"])
-                    else:
-                        selected_department_comp = st.selectbox('Jämför med Department:', 
-                        ["All"] + universities2[
-                            (universities2['Code'].str.startswith(selected_institute_code_comp + '.')) & (universities2['Code'].str.count('\.') == 2)]['Department'].tolist(), index=0
-                        ) # Avdelning
-                
-                data2 = fetch_data(selected_university_comp, selected_institute_comp, selected_department_comp, title_filter, type_filter, fran_ar, till_ar)
-
-            else:
-                selected_university_comp = ""
-                selected_institute_comp = ""
-                selected_department_comp = ""
-                data2 = pd.DataFrame()
-        
-        with col11:
-            pass          
+        else:
+            selected_university_comp = ""
+            selected_institute_comp = ""
+            selected_department_comp = ""
+            data2 = pd.DataFrame()
+    
+    with col11:
+        pass          
 
 
     # Fetch the data
