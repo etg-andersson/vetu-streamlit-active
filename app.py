@@ -1438,8 +1438,11 @@ elif navigation == 'Sök Artiklar':
                         filtered_specialties.insert(0, "All")
 
                         selected_specialty = right.selectbox("Select Specialty", filtered_specialties)
-                        specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
-                        filters["Specialty"] = specialty_code
+                        if selected_specialty != "All":
+                            specialty_code = topic_codes_df[topic_codes_df['Swedish'] == selected_specialty]['Code'].values[0]
+                            filters["Specialty"] = specialty_code
+                        else:
+                            filters['Specialty'] = "All"
                     else:
                         filters['Specialty'] = "All"
                 else:
