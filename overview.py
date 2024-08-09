@@ -8,6 +8,20 @@ import plotly.express as px
 from supabase import create_client, Client
 import plotly.io as pio
 
+# Accessing Supabase secrets
+secrets = st.secrets["supabase"]
+
+# Function to create a connection to the PostgreSQL database
+def create_conn():
+    conn = psycopg2.connect(
+        host=secrets["host_hidden"],
+        dbname=secrets["db_hidden"],
+        user=secrets["user_hidden"],
+        password=secrets["password_hidden"],
+        port=secrets["port_hidden"]
+    )
+    return conn
+
 # Get all the data
 def fetch_impact_citation_data():
         conn = create_conn()
