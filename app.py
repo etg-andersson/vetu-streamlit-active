@@ -693,10 +693,6 @@ elif navigation == 'Akademi & Högskola':
 
     search_button = st.button("Search")
 
-    fig1 = None
-    fig2 = None
-    fig3 = None
-
     if search_button:
         # Fetch the data
         data = fetch_data(selected_university, selected_institute, selected_department, title_filter, type_filter, fran_ar, till_ar)
@@ -728,7 +724,7 @@ elif navigation == 'Akademi & Högskola':
             fig3 = None
             st.write("No data available for the given filters and year range.")
     
-    if fig1:
+    if not data.empty or not data2.empty:
         st.plotly_chart(fig1)
         st.plotly_chart(fig2)
         st.plotly_chart(fig3)
@@ -762,6 +758,8 @@ elif navigation == 'Akademi & Högskola':
             file_name="avg_citations_chart.pdf",
             mime="application/pdf"
         )
+    else:
+        st.write("Please select filters.")
 
 elif navigation == 'Region (ALF)':
     def fetch_affiliations(search_text, type_filter, topic_filter, major_code, specialty_code, from_year, to_year):
