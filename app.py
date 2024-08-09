@@ -176,7 +176,8 @@ st.write('---')
 if navigation == 'Översikt':
 
     from overview import fetch_overview_data
-    from overview import plot_papers_per_year
+    from overview import fetch_papers_per_year
+    from overview import bar_plot_total_papers_per_year
     from overview import calculate_percentage_composition_citations
     from overview import bar_plot_citation_composition
     from overview import bar_plot_total_citations
@@ -208,7 +209,9 @@ if navigation == 'Översikt':
     # Column 2: Papers Published Each Year
     with col2:
 
-        overview_total_papers_per_year = plot_papers_per_year()
+        papers_per_year = fetch_papers_per_year()
+
+        overview_total_papers_per_year = bar_plot_total_papers_per_year(papers_per_year)
 
         # Display the plot in Streamlit
         st.plotly_chart(overview_total_papers_per_year)
