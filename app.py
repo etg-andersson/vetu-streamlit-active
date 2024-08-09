@@ -715,43 +715,49 @@ elif navigation == 'Akademi & Högskola':
                     pass
 
             fig1 = create_publications_chart(data, data2, 'Publications Over Time')
-            st.plotly_chart(fig1)
             fig2 = create_citations_chart(data, data2, 'Total Citations Over Time')
-            st.plotly_chart(fig2)
             fig3 = create_avg_citations_chart(data, data2, 'Average Citations per Paper Over Time')
-            st.plotly_chart(fig3)
-
-            pdf_buffer1 = io.BytesIO()
-            fig1.write_image(pdf_buffer1, format='pdf')
-            pdf_buffer1.seek(0)
-            st.download_button(
-                label="Download publications chart as PDF",
-                data=pdf_buffer1,
-                file_name="publications_chart.pdf",
-                mime="application/pdf"
-            )
             
-            pdf_buffer2 = io.BytesIO()
-            fig2.write_image(pdf_buffer2, format='pdf')
-            pdf_buffer2.seek(0)
-            st.download_button(
-                label="Download total citations chart as PDF",
-                data=pdf_buffer2,
-                file_name="citations_chart.pdf",
-                mime="application/pdf"
-            )
-
-            pdf_buffer3 = io.BytesIO()
-            fig3.write_image(pdf_buffer3, format='pdf')
-            pdf_buffer3.seek(0)
-            st.download_button(
-                label="Download average citations per paper chart as PDF",
-                data=pdf_buffer3,
-                file_name="avg_citations_chart.pdf",
-                mime="application/pdf"
-            )
         else:
+            fig1 = None
+            fig2 = None
+            fig3 = None
             st.write("No data available for the given filters and year range.")
+    
+    if fig1:
+        st.plotly_chart(fig1)
+        st.plotly_chart(fig2)
+        st.plotly_chart(fig3)
+
+        pdf_buffer1 = io.BytesIO()
+        fig1.write_image(pdf_buffer1, format='pdf')
+        pdf_buffer1.seek(0)
+        st.download_button(
+            label="Download publications chart as PDF",
+            data=pdf_buffer1,
+            file_name="publications_chart.pdf",
+            mime="application/pdf"
+        )
+        
+        pdf_buffer2 = io.BytesIO()
+        fig2.write_image(pdf_buffer2, format='pdf')
+        pdf_buffer2.seek(0)
+        st.download_button(
+            label="Download total citations chart as PDF",
+            data=pdf_buffer2,
+            file_name="citations_chart.pdf",
+            mime="application/pdf"
+        )
+
+        pdf_buffer3 = io.BytesIO()
+        fig3.write_image(pdf_buffer3, format='pdf')
+        pdf_buffer3.seek(0)
+        st.download_button(
+            label="Download average citations per paper chart as PDF",
+            data=pdf_buffer3,
+            file_name="avg_citations_chart.pdf",
+            mime="application/pdf"
+        )
 
 elif navigation == 'Region (ALF)':
     def fetch_affiliations(search_text, type_filter, topic_filter, major_code, specialty_code, from_year, to_year):
