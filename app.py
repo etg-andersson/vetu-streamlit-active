@@ -1159,7 +1159,7 @@ elif navigation == 'Tidsskrifter':
             journal_counts['Truncated Journal'] = journal_counts['Journal'].apply(truncate_journal_name)
 
             # Sort by "Total Papers" in descending order and select the top 10
-            top_journals = journal_counts.sort_values(by="Total Papers", ascending=False).head(10)
+            top_journals = journal_counts.sort_values(by="Total Papers", ascending=True).head(10)
 
             # Example plot (optional)
             if not top_journals.empty:
